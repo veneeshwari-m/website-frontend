@@ -1,0 +1,125 @@
+.clearance-banner {
+  background-color: #fae8f0;
+  padding: 60px 10%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  margin: 40px auto;
+  max-width: 1600px;
+}
+
+.clearance-banner::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  right: 5%;
+  width: 80px;
+  height: 80px;
+  background-color: #dfb9d4;
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+.clearance-banner::after {
+  content: '';
+  position: absolute;
+  bottom: -30px;
+  left: 8%;
+  width: 120px;
+  height: 120px;
+  background-color: #dfb9d4;
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+.clearance-banner-blob {
+  position: absolute;
+  bottom: 25%;
+  left: 15%;
+  width: 90px;
+  height: 90px;
+  background-color: #dfb9d4;
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+.clearance-content {
+  max-width: 600px;
+  z-index: 2;
+  position: relative;
+}
+
+.clearance-tag {
+  display: inline-block;
+  background-color: #0F2D5C;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+}
+
+.clearance-title {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 40px;
+  color: #222;
+  margin: 0 0 5px 0;
+  font-weight: normal;
+}
+
+.clearance-discount {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 52px;
+  color: #0F2D5C;
+  margin: 0 0 15px 0;
+  font-weight: bold;
+}
+
+.clearance-desc {
+  font-size: 15px;
+  color: #555;
+  margin: 0 0 35px 0;
+}
+
+.clearance-btn {
+  background-color: #0F2D5C;
+  color: white;
+  border: none;
+  padding: 14px 35px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 30px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: background-color 0.2s;
+}
+
+.clearance-btn:hover {
+  background-color: #6b1e6e;
+}
+
+.clearance-image {
+  z-index: 2;
+  position: relative;
+  margin-right: 10%;
+}
+
+@media (max-width: 900px) {
+  .clearance-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 50px 20px;
+  }
+  
+  .clearance-image {
+    margin-right: 0;
+    margin-top: 40px;
+  }
+}

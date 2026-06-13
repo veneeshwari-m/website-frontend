@@ -1,0 +1,145 @@
+.blog-page-section {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  background-color: #FAF8F5;
+}
+
+.blog-page-header {
+  margin-bottom: 40px;
+}
+
+.blog-page-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  color: #333;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  padding: 20px 0;
+}
+
+.blog-card {
+  text-align: left;
+  cursor: pointer;
+}
+
+.blog-image-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.blog-image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  display: block;
+}
+
+.blog-card:hover .blog-image {
+  transform: scale(1.03);
+}
+
+.blog-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 12px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.blog-excerpt {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.blog-date {
+  font-size: 13px;
+  color: #555;
+}
+
+.popular-posts-section {
+  margin-top: 60px;
+  text-align: left;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.popular-posts-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #0F2D5C;
+  padding-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.popular-posts-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.popular-post-item {
+  display: flex;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid #eaeaea;
+  gap: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.popular-post-item:hover {
+  background-color: #fcfcfc;
+}
+
+.popular-post-item:last-child {
+  border-bottom: none;
+}
+
+.popular-post-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.popular-post-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.popular-post-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  color: #333;
+  margin: 0;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.popular-post-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+}

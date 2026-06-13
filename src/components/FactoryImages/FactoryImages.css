@@ -1,0 +1,29 @@
+.factory-section {
+  display: flex;
+  width: 100%;
+  gap: 20px;
+  padding: 20px 20px;
+  box-sizing: border-box;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.factory-image-container {
+  flex: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.factory-image-container img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .factory-section {
+    flex-direction: column;
+  }
+}

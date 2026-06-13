@@ -1,0 +1,59 @@
+.exchange-page {
+  background-color: #fafafa;
+  padding: 60px 20px;
+  min-height: 60vh;
+}
+
+.exchange-container {
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: transparent;
+  color: #333;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.exchange-title {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 500;
+  margin-bottom: 30px;
+  color: #222;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
+
+.exchange-intro {
+  font-size: 1rem;
+  line-height: 1.8;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.exchange-section {
+  margin-bottom: 40px;
+}
+
+.exchange-section h2 {
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+  color: #222;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
+
+.exchange-section p {
+  font-size: 1rem;
+  line-height: 1.8;
+  margin-bottom: 15px;
+}
+
+.exchange-list {
+  list-style-type: disc;
+  margin-left: 40px;
+  margin-bottom: 20px;
+}
+
+.exchange-list li {
+  font-size: 1rem;
+  line-height: 1.8;
+  margin-bottom: 10px;
+}

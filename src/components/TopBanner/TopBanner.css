@@ -1,0 +1,50 @@
+.top-banner {
+  background-color: #0F2D5C;
+  color: white;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.top-banner-content {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.banner-nav-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 5px 15px;
+  opacity: 0.8;
+  transition: opacity 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.banner-nav-btn:hover {
+  opacity: 1;
+}
+
+.banner-text-container {
+  flex-grow: 1;
+  text-align: center;
+  overflow: hidden;
+}
+
+.banner-text {
+  display: inline-block;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,130 @@
+.instagram-section {
+  padding: 60px 20px;
+  background-color: #faf8f5;
+  text-align: center;
+  border-top: 1px solid #eaeaea;
+}
+
+.instagram-header h2 {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 32px;
+  color: #222;
+  margin: 0 0 15px 0;
+  font-weight: normal;
+}
+
+.instagram-btn {
+  background-color: #0F2D5C;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-bottom: 40px;
+  transition: background-color 0.2s;
+  position: relative;
+}
+
+/* The red notification dot */
+.instagram-btn::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -5px;
+  width: 8px;
+  height: 8px;
+  background-color: #ff4757;
+  border-radius: 50%;
+  border: 2px solid #faf8f5;
+}
+
+.instagram-btn:hover {
+  background-color: #6b1e6e;
+}
+
+.instagram-scroller {
+  overflow: hidden;
+  width: 100%;
+  max-width: 100vw;
+  padding: 10px 0;
+}
+
+.instagram-track {
+  display: flex;
+  width: max-content;
+  animation: scroll-instagram 35s linear infinite;
+}
+
+.instagram-track:hover {
+  animation-play-state: paused;
+}
+
+.instagram-set {
+  display: flex;
+  gap: 20px;
+  padding-right: 20px;
+}
+
+@keyframes scroll-instagram {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.instagram-card {
+  width: 320px;
+  flex-shrink: 0;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+}
+
+.instagram-image {
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.instagram-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.instagram-info {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+
+.instagram-caption {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.5;
+  margin: 0 0 15px 0;
+}
+
+.instagram-likes {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #777;
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .instagram-card {
+    width: 280px;
+  }
+}

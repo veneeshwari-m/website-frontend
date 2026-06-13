@@ -1,0 +1,108 @@
+.cart-page {
+  min-height: calc(100vh - 120px);
+  background-color: #fbf8f5;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.cart-title {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 36px;
+  color: #333;
+  margin: 0 0 30px 0;
+  font-weight: normal;
+  letter-spacing: 0.5px;
+}
+
+.continue-shopping-btn {
+  background-color: #0F2D5C;
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 60px;
+  transition: background-color 0.2s;
+}
+
+.continue-shopping-btn:hover {
+  background-color: #6b1e6e;
+}
+
+.checkout-btn {
+  background-color: #5C2BF1;
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.checkout-btn:hover {
+  background-color: #4a1fbd;
+}
+
+.account-section h2 {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 32px;
+  color: #333;
+  margin: 0 0 15px 0;
+  font-weight: normal;
+}
+
+.account-section p {
+  font-size: 16px;
+  color: #555;
+  margin: 0;
+}
+
+.login-link {
+  color: #555;
+  text-decoration: underline;
+}
+
+.login-link:hover {
+  text-decoration: none;
+  color: #333;
+}
+
+.cart-footer {
+  text-align: center;
+  padding: 40px 20px 60px;
+}
+
+.cart-footer h3 {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 28px;
+  color: #333;
+  margin: 0 0 20px 0;
+  font-weight: normal;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.globe-emoji {
+  font-size: 38px;
+  line-height: 1;
+}
+
+.cart-footer p {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}

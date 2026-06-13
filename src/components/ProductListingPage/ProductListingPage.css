@@ -1,0 +1,149 @@
+.plp-section {
+  padding: 30px 40px 80px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.plp-breadcrumb {
+  font-size: 13px;
+  color: #888;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.plp-breadcrumb span {
+  color: #222;
+}
+
+.plp-heading {
+  text-align: center;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 34px;
+  color: #222;
+  font-weight: normal;
+  margin: 0 0 60px 0;
+}
+
+.plp-content {
+  display: flex;
+  gap: 50px;
+}
+
+.plp-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+}
+
+.filter-section {
+  border-top: 1px solid #eaeaea;
+  padding-top: 20px;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  font-size: 15px;
+  margin-bottom: 20px;
+  color: #333;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.filter-divider {
+  border: none;
+  border-top: 1px solid #0F2D5C;
+  margin: 25px 0;
+}
+
+.filter-toggle {
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+}
+
+.filter-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.filter-list li {
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  color: #444;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.filter-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 1px solid #0F2D5C;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.filter-checkbox.checked {
+  background-color: #0F2D5C;
+}
+
+.plp-main {
+  flex-grow: 1;
+}
+
+.plp-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  font-size: 14.5px;
+  color: #444;
+}
+
+.plp-sort {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.plp-sort select {
+  border: none;
+  font-size: 14.5px;
+  color: #222;
+  outline: none;
+  cursor: pointer;
+  background: transparent;
+}
+
+.plp-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
+  .plp-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .plp-content {
+    flex-direction: column;
+  }
+  .plp-sidebar {
+    width: 100%;
+  }
+  .plp-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
