@@ -47,7 +47,7 @@
 }
 
 .new-arrival-btn {
-  background-color: #A55CA0;
+  background-color: #0F2D5C;
   color: white;
   border: none;
   border-radius: 6px;
@@ -74,7 +74,7 @@
 }
 
 .new-arrival-btn:hover {
-  background-color: #0F2D5C;
+  background-color: #0A1E3F;
   animation-play-state: paused;
 }
 

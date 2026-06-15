@@ -1,0 +1,443 @@
+.rzp-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(2px);
+}
+
+.rzp-modal {
+  width: 900px;
+  height: 550px;
+  background: white;
+  border-radius: 12px;
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Left Pane */
+.rzp-left-pane {
+  flex: 0 0 350px;
+  background: linear-gradient(135deg, #0F2D5C 0%, #0A1E3F 100%);
+  padding: 30px 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Abstract shopping bags illustration */
+.rzp-illustration {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  pointer-events: none;
+  opacity: 0.8;
+  z-index: 0;
+}
+
+.rzp-bag {
+  position: absolute;
+  background: #2c5192;
+  box-shadow: -5px 5px 15px rgba(0,0,0,0.1);
+}
+
+.rzp-bag-1 {
+  width: 80px;
+  height: 100px;
+  bottom: 30px;
+  left: 40px;
+  border-radius: 4px;
+  transform: rotate(-10deg);
+}
+
+.rzp-bag-2 {
+  width: 100px;
+  height: 80px;
+  bottom: 20px;
+  right: 30px;
+  border-radius: 4px;
+  background: #436db5;
+  transform: rotate(5deg);
+}
+
+.rzp-discount-star {
+  position: absolute;
+  top: 10px;
+  left: 120px;
+  width: 40px;
+  height: 40px;
+  background: white;
+  color: #0F2D5C;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.rzp-brand, .rzp-card, .rzp-secured {
+  position: relative;
+  z-index: 1;
+}
+
+.rzp-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.rzp-logo {
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  background: white;
+  padding: 2px;
+  object-fit: contain;
+}
+
+.rzp-brand-info h2 {
+  color: white;
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.rzp-trusted-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.15);
+  color: white;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.rzp-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.rzp-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.rzp-product-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rzp-product-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #eee;
+}
+
+.rzp-product-details {
+  flex: 1;
+}
+
+.rzp-product-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.rzp-product-qty {
+  font-size: 12px;
+  color: #888;
+}
+
+.rzp-product-price {
+  font-weight: 700;
+  font-size: 18px;
+  color: #111;
+}
+
+.rzp-coupons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.rzp-coupon-icon {
+  background: #e1f7eb;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rzp-coupon-details {
+  flex: 1;
+}
+
+.rzp-coupon-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 2px;
+}
+
+.rzp-coupon-subtitle {
+  font-size: 12px;
+  color: #999;
+}
+
+.rzp-secured {
+  margin-top: auto;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+}
+
+.rzp-secured strong {
+  color: white;
+  font-style: italic;
+  font-weight: 800;
+}
+
+/* Right Pane */
+.rzp-right-pane {
+  flex: 1;
+  background: white;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.rzp-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  padding: 5px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.rzp-close-btn:hover {
+  opacity: 1;
+}
+
+.rzp-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+  color: #a0a0a0;
+}
+
+.rzp-stepper .active {
+  color: #0F2D5C;
+  font-weight: 600;
+  background: #eaf0f8;
+  padding: 4px 12px;
+  border-radius: 15px;
+}
+
+.rzp-form-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 80px;
+  text-align: center;
+}
+
+.rzp-contact-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid #eaeaea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.rzp-form-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 8px 0;
+}
+
+.rzp-form-subtitle {
+  font-size: 15px;
+  color: #777;
+  margin: 0 0 35px 0;
+}
+
+.rzp-input-group {
+  width: 100%;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.rzp-input-group input {
+  width: 100%;
+  height: 52px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0 15px;
+  font-size: 15px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s;
+  color: #333;
+}
+
+.rzp-input-group input:focus {
+  border-color: #0F2D5C;
+}
+
+.rzp-input-group input::placeholder {
+  color: #aaa;
+}
+
+.phone-group {
+  display: flex;
+}
+
+.rzp-country-code {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 15px;
+  border: 1px solid #e0e0e0;
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  background: #fdfdfd;
+  font-size: 14px;
+  color: #333;
+}
+
+.rzp-country-code .flag {
+  font-size: 16px;
+}
+
+.phone-group input {
+  border-radius: 0 6px 6px 0;
+  flex: 1;
+}
+
+.rzp-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 30px;
+  font-size: 14px;
+  color: #555;
+  cursor: pointer;
+  text-align: left;
+}
+
+.rzp-checkbox-label input {
+  display: none;
+}
+
+.rzp-checkbox-label .checkmark {
+  width: 18px;
+  height: 18px;
+  background: white;
+  border: 1px solid #333;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rzp-checkbox-label input:checked ~ .checkmark {
+  background: #111;
+  border-color: #111;
+}
+
+.rzp-continue-btn {
+  width: 100%;
+  height: 52px;
+  background: #180911;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.rzp-continue-btn:hover {
+  background: #000;
+}
+
+.rzp-footer {
+  padding: 15px;
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  background: #fcfcfc;
+  border-top: 1px solid #f5f5f5;
+}
+
+.rzp-footer strong {
+  color: #666;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .rzp-modal {
+    width: 95%;
+    height: 90vh;
+    flex-direction: column;
+  }
+  
+  .rzp-left-pane {
+    flex: 0 0 auto;
+    padding: 20px;
+  }
+  
+  .rzp-form-content {
+    padding: 20px;
+  }
+}
