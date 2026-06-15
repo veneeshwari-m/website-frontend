@@ -89,13 +89,20 @@ function App() {
   }
 
   if (currentPage === 'dashboard') {
-    return <UserDashboard onNavigate={handleNavigate} />;
+    return <UserDashboard 
+      onNavigate={handleNavigate} 
+      onLogout={() => {
+        localStorage.removeItem('token');
+        setIsAuthenticated(false);
+        handleNavigate('home');
+      }}
+    />;
   }
 
   return (
     <div className="App">
       <TopBanner />
-      <Header onNavigate={handleNavigate} currentPage={currentPage} />
+      <Header onNavigate={handleNavigate} currentPage={currentPage} isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
       {currentPage === 'home' && (
         <>
           <Hero onNavigate={handleNavigate} />
