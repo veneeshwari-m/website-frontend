@@ -58,6 +58,7 @@ const allProducts = [
 
 const ProductListingPage = ({ gender = "Boys", initialCategory = "Traditional" }) => {
   const [activeCategory, setActiveCategory] = useState(initialCategory);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   let categories;
   if (gender === "NewBorn") {
@@ -163,13 +164,60 @@ const ProductListingPage = ({ gender = "Boys", initialCategory = "Traditional" }
                 <div className="product-info">
                   <h3 className="product-title">{product.name}</h3>
                   <p className="product-price">{product.price}</p>
-                  <button className="select-options-btn">Select Options</button>
+                  <button className="select-options-btn" onClick={() => setSelectedProduct(product)}>Select Options</button>
                 </div>
               </div>
             ))}
           </div>
         </main>
       </div>
+
+      {selectedProduct && (
+        <div className="quick-view-modal-overlay" onClick={() => setSelectedProduct(null)}>
+          <div className="quick-view-modal-content" onClick={e => e.stopPropagation()}>
+            <button className="quick-view-close" onClick={() => setSelectedProduct(null)}>✕</button>
+            <div className="quick-view-body">
+              <div className="quick-view-image">
+                <img src={selectedProduct.img} alt={selectedProduct.name} />
+              </div>
+              <div className="quick-view-details">
+                <h2 className="quick-view-title">{selectedProduct.name}</h2>
+                <p className="quick-view-price">{selectedProduct.price}</p>
+                
+                <p className="quick-view-size-label">Size: M</p>
+                <div className="quick-view-sizes">
+                  {['M', '1Y', '2Y', '3Y', '5Y', '6Y', '7Y', '8Y', '9Y', '10Y', '11Y', '12Y', '13Y'].map(size => (
+                    <button key={size} className={`size-btn ${size === 'M' ? 'selected' : ''}`}>{size}</button>
+                  ))}
+                </div>
+
+                <div className="quick-view-description">
+                  <p>Dress your little princess in pure elegance with this stunning Red & Green Banarasi Pattu Coat Gown from Prince N Princess - trusted by 10L+ happy parents across India.</p>
+                  <p>Puff sleeves with a gold Banarasi border cuff complete the royal look. The soft cotton inner lining gently protects your baby's delicate skin for all-day comfort. Perfect for naming ceremony, half saree function, mottai ceremony, temple visit, wedding, and festive photoshoots.</p>
+                  
+                  <div className="product-details-list" style={{ marginTop: '25px' }}>
+                    <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: '#333', marginBottom: '15px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>PRODUCT DETAILS</h3>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: '2', color: '#444', fontSize: '14.5px' }}>
+                      <li><strong style={{ fontWeight: 600 }}>Color:</strong> Yellow & Green</li>
+                      <li><strong style={{ fontWeight: 600 }}>Material:</strong> Premium Silk Coat Top with Banarasi Silk Skirt</li>
+                      <li><strong style={{ fontWeight: 600 }}>Embellishment:</strong> Scallop Aari Work Yoke with Gold Stonework & Circular Motifs</li>
+                      <li><strong style={{ fontWeight: 600 }}>Neck:</strong> Open-Front Coat Style with Tassel Tie</li>
+                      <li><strong style={{ fontWeight: 600 }}>Sleeves:</strong> Puff Sleeves with Gold Banarasi Cuff Border</li>
+                      <li><strong style={{ fontWeight: 600 }}>Closure:</strong> Back Zip</li>
+                      <li><strong style={{ fontWeight: 600 }}>Lining:</strong> Soft Cotton Lining to Protect Delicate Skin</li>
+                      <li><strong style={{ fontWeight: 600 }}>Wash Care:</strong> Normal Wash (Wash dark colours separately)</li>
+                      <li><strong style={{ fontWeight: 600 }}>Iron Care:</strong> Warm Iron</li>
+                    </ul>
+                    <p style={{ marginTop: '25px', fontSize: '14px', color: '#666', lineHeight: '1.6' }}>
+                      Note: Color may vary slightly due to photographic lighting or device display settings.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
