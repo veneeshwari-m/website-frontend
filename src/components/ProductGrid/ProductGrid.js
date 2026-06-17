@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
+import { GraphQLClient, gql } from 'graphql-request';
 import './ProductGrid.css';
 
-const products = [
-  { id: 1, name: "Baby Girl Yellow & Green Banarasi Pattu Gown - Aari...", price: "Rs. 1,999.00", img: "/images/frock1.png", images: ["/images/frock1.png", "/images/frock2.png", "/images/frock3.png"] },
-  { id: 2, name: "Baby Girl Pink & Sandal Banarasi Pattu Gown - Aari...", price: "Rs. 1,999.00", img: "/images/frock2.png", images: ["/images/frock2.png", "/images/frock1.png", "/images/frock3.png"] },
-  { id: 3, name: "Baby Girl Purple Banarasi Pattu Gown - Aari Work Coa...", price: "Rs. 1,999.00", img: "/images/frock3.png", images: ["/images/frock3.png", "/images/frock1.png", "/images/frock2.png"] },
-  { id: 4, name: "Baby Girl Green & Peach Silk Pattu Gown - Aari Work Coa...", price: "Rs. 1,999.00", img: "/images/frock4.png", images: ["/images/frock4.png", "/images/frock5.png", "/images/frock1.png"] },
-  { id: 5, name: "Baby Girl Red & Rose Gold Banarasi Pattu Gown - Aari...", price: "Rs. 1,999.00", img: "/images/frock5.png", images: ["/images/frock5.png", "/images/frock4.png", "/images/frock1.png"] },
-];
+const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
-const ProductGrid = ({ onNavigate }) => {
+const ADD_TO_CART = gql`
+  mutation AddToCart($userId: ID!, $shopId: ID!, $productId: ID!, $quantity: Float!) {
+    addToCart(userId: $userId, shopId: $shopId, productId: $productId, quantity: $quantity) {
+      id
+      totalQuantity
+      subTotal
+    }
+  }
+`;
+
+const ProductGrid = ({ title, category, categoryId, products = [], onNavigate }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -34,33 +39,72 @@ const ProductGrid = ({ onNavigate }) => {
     }
   };
 
+  const handleAddToCart = async (e) => {
+    e.stopPropagation();
+    if (!selectedProduct) return;
+    
+    try {
+      const client = new GraphQLClient(GRAPHQL_ENDPOINT);
+      let userId = localStorage.getItem('guestId');
+      if (!userId) {
+        userId = 'guest_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('guestId', userId);
+      }
+      
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        if (parsed && parsed.id) userId = parsed.id;
+      }
+
+      const variables = {
+        userId: userId,
+        shopId: "default",
+        productId: selectedProduct.id.toString(),
+        quantity: quantity
+      };
+
+      await client.request(ADD_TO_CART, variables);
+      
+      alert('Product added to cart successfully!');
+      setSelectedProduct(null);
+      window.dispatchEvent(new Event('cartUpdated'));
+    } catch (err) {
+      console.error('Add to cart error:', err);
+      alert('Failed to add to cart. Please try again.');
+    }
+  };
+
   return (
     <section className="product-grid-section">
       <div className="product-grid-header">
-        <h2>Traditional gowns</h2>
-        <p>Loved by parents for its timeless tradition and comfort!</p>
+        <h2 style={{ textTransform: 'capitalize' }}>{title || 'Latest Collection'}</h2>
+        <p>Explore our exclusive collection of {category ? category.toLowerCase() : 'products'}!</p>
       </div>
       
       <div className="product-grid-container">
-        {products.map(product => (
-          <div key={product.id} className="product-card">
-            <div className="product-image-container">
-              <img src={product.img} alt={product.name} onError={(e) => { e.target.src = "https://placehold.co/300x400/e8e8e8/8a2b8f?text=Gown" }} />
-              <div className="product-badge">
-                <img src="/images/logo.png" alt="logo" style={{width: '20px', height: '20px', objectFit: 'contain'}} onError={(e) => e.target.style.display = 'none'} />
+        {products.slice(0, 4).map(product => {
+          const productImg = Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : (product.images || "https://placehold.co/300x400/e8e8e8/8a2b8f?text=Product");
+          return (
+            <div key={product.id} className="product-card">
+              <div className="product-image-container">
+                <img src={productImg} alt={product.name} onError={(e) => { e.target.src = "https://placehold.co/300x400/e8e8e8/8a2b8f?text=Product" }} />
+                <div className="product-badge">
+                  <img src="/images/logo.png" alt="logo" style={{width: '20px', height: '20px', objectFit: 'contain'}} onError={(e) => e.target.style.display = 'none'} />
+                </div>
+              </div>
+              <div className="product-info">
+                <h3 className="product-title">{product.name}</h3>
+                <p className="product-price">Rs. {product.price}</p>
+                <button className="select-options-btn" onClick={() => handleSelectProduct(product)}>Select Options</button>
               </div>
             </div>
-            <div className="product-info">
-              <h3 className="product-title">{product.name}</h3>
-              <p className="product-price">{product.price}</p>
-              <button className="select-options-btn" onClick={() => handleSelectProduct(product)}>Select Options</button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="product-grid-footer">
-        <button className="shop-more-btn" onClick={() => onNavigate && onNavigate('girls-plp', 'Traditional')}>Shop More..</button>
+        <button className="shop-more-btn" onClick={() => onNavigate && onNavigate('category-plp', category, categoryId)}>Shop More..</button>
       </div>
 
       {selectedProduct && (
@@ -70,8 +114,9 @@ const ProductGrid = ({ onNavigate }) => {
             <div className="quick-view-body">
               <div className="quick-view-image" style={{ position: 'relative' }}>
                 <img 
-                  src={selectedProduct.images ? selectedProduct.images[currentImageIndex] : selectedProduct.img} 
+                  src={Array.isArray(selectedProduct.images) ? selectedProduct.images[currentImageIndex] : (selectedProduct.images || "https://placehold.co/300x400/e8e8e8/8a2b8f?text=Product")} 
                   alt={selectedProduct.name} 
+                  onError={(e) => { e.target.src = "https://placehold.co/300x400/e8e8e8/8a2b8f?text=Product" }}
                 />
                 {selectedProduct.images && selectedProduct.images.length > 1 && (
                   <>
@@ -102,7 +147,7 @@ const ProductGrid = ({ onNavigate }) => {
               </div>
               <div className="quick-view-details">
                 <h2 className="quick-view-title">{selectedProduct.name}</h2>
-                <p className="quick-view-price">{selectedProduct.price}</p>
+                <p className="quick-view-price">Rs. {selectedProduct.price}</p>
                 
                 <p className="quick-view-size-label">Size: M</p>
                 <div className="quick-view-sizes">
@@ -140,9 +185,9 @@ const ProductGrid = ({ onNavigate }) => {
                         <span style={{ fontSize: '16px', color: '#333' }}>{quantity}</span>
                         <button onClick={(e) => { e.stopPropagation(); setQuantity(q => q + 1); }} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#666' }}>+</button>
                       </div>
-                      <button onClick={(e) => { e.stopPropagation(); setSelectedProduct(null); onNavigate('cart'); }} style={{ flex: 1, backgroundColor: '#8a2b8f', color: 'white', border: 'none', borderRadius: '4px', fontWeight: '600', fontSize: '16px', cursor: 'pointer' }}>Add to Cart</button>
+                      <button onClick={handleAddToCart} style={{ flex: 1, backgroundColor: '#8a2b8f', color: 'white', border: 'none', borderRadius: '4px', fontWeight: '600', fontSize: '16px', cursor: 'pointer' }}>Add to Cart</button>
                     </div>
-                    <button onClick={(e) => { e.stopPropagation(); setSelectedProduct(null); onNavigate('checkout'); }} style={{ width: '100%', backgroundColor: '#8a2b8f', color: 'white', border: 'none', borderRadius: '4px', fontWeight: '600', fontSize: '16px', cursor: 'pointer', padding: '15px 0', marginBottom: '25px' }}>Buy it now</button>
+                    <button onClick={(e) => { e.stopPropagation(); handleAddToCart(e); /* Then redirect to cart/checkout */ }} style={{ width: '100%', backgroundColor: '#8a2b8f', color: 'white', border: 'none', borderRadius: '4px', fontWeight: '600', fontSize: '16px', cursor: 'pointer', padding: '15px 0', marginBottom: '25px' }}>Buy it now</button>
                     <a href="#/" style={{ color: '#222', textDecoration: 'none', fontWeight: '500', fontSize: '15px', display: 'flex', alignItems: 'center', gap: '5px' }} onClick={(e) => { e.preventDefault(); }}>
                       View Full Details <span style={{ fontSize: '18px', lineHeight: 1 }}>»</span>
                     </a>

@@ -1,11 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import { GraphQLClient, gql } from 'graphql-request';
 import './Header.css';
 import SearchDrawer from '../SearchDrawer/SearchDrawer';
+import Navigation from '../Navigation/Navigation';
+
+const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
+
+const GET_CART = gql`
+  query GetCartByUserId($userId: ID!) {
+    getCartByUserId(userId: $userId) {
+      id
+      totalQuantity
+    }
+  }
+`;
 
 const Header = ({ onNavigate, currentPage, isAuthenticated, setIsAuthenticated }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -13,6 +27,35 @@ const Header = ({ onNavigate, currentPage, isAuthenticated, setIsAuthenticated }
       if (storedUser) setUserData(JSON.parse(storedUser));
     }
   }, [isAuthenticated]);
+
+  const fetchCartCount = async () => {
+    try {
+      let userId = localStorage.getItem('guestId');
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        if (parsed && parsed.id) userId = parsed.id;
+      }
+      
+      if (!userId) return;
+
+      const client = new GraphQLClient(GRAPHQL_ENDPOINT);
+      const data = await client.request(GET_CART, { userId });
+      if (data && data.getCartByUserId) {
+        setCartCount(data.getCartByUserId.totalQuantity || 0);
+      }
+    } catch (err) {
+      console.error('Error fetching cart count:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCartCount();
+    window.addEventListener('cartUpdated', fetchCartCount);
+    return () => {
+      window.removeEventListener('cartUpdated', fetchCartCount);
+    };
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -30,44 +73,7 @@ const Header = ({ onNavigate, currentPage, isAuthenticated, setIsAuthenticated }
             <img src="/images/logo.png" alt="shop Logo" className="logo" onClick={() => onNavigate && onNavigate('home')} style={{ cursor: 'pointer' }} />
           </div>
 
-          <nav className="header-center">
-            <ul className="nav-links">
-              <li><a href="#home" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('home'); }} className={currentPage === 'home' ? 'active-link' : ''}>Home</a></li>
-              <li className="nav-item-dropdown">
-                <a href="#boys" className={`has-dropdown ${currentPage === 'kurta-pajama' ? 'active-link' : ''}`}>Boys <svg className="dropdown-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></a>
-                <div className="dropdown-menu">
-                  <a href="#traditional" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('kurta-pajama', 'Traditional'); }}>Traditional</a>
-                  <a href="#modern" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('kurta-pajama', 'Modern'); }}>Modern</a>
-                  <a href="#nightwear" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('kurta-pajama', 'Nightwear'); }}>Nightwear</a>
-                </div>
-              </li>
-              <li className="nav-item-dropdown">
-                <a href="#girls" className={`has-dropdown ${currentPage === 'girls-plp' ? 'active-link' : ''}`}>Girls <svg className="dropdown-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></a>
-                <div className="dropdown-menu">
-                  <a href="#traditional" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('girls-plp', 'Traditional'); }}>Traditional</a>
-                  <a href="#modern" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('girls-plp', 'Modern'); }}>Modern</a>
-                  <a href="#nightwear" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('girls-plp', 'Nightwear'); }}>Nightwear</a>
-                </div>
-              </li>
-              <li className="nav-item-dropdown">
-                <a href="#newborn" className={`has-dropdown ${currentPage === 'newborn-plp' ? 'active-link' : ''}`}>NewBorn <svg className="dropdown-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></a>
-                <div className="dropdown-menu">
-                  <a href="#giftbox" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('newborn-plp', 'Newborn Giftbox'); }}>Newborn Giftbox</a>
-                  <a href="#pattu" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('newborn-plp', 'Newborn Pattu Frock'); }}>Newborn Pattu Frock</a>
-                </div>
-              </li>
-              <li className="nav-item-dropdown">
-                <a href="#bestselling" className={`has-dropdown ${currentPage === 'bestselling-plp' ? 'active-link' : ''}`}>Best Selling Products <svg className="dropdown-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></a>
-                <div className="dropdown-menu">
-                  <a href="#festival" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('bestselling-plp', 'Festival Collection'); }}>Festival Collection</a>
-                  <a href="#birthday" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('bestselling-plp', 'Birthday Collection'); }}>Birthday Collection</a>
-                </div>
-              </li>
-              <li><a href="#clearance" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('clearance-plp', 'All Categories'); }} className={currentPage === 'clearance-plp' ? 'active-link' : ''}>Clearance Sale Live Now!</a></li>
-              <li><a href="#stores" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('stores-page'); }} className={currentPage === 'stores-page' ? 'active-link' : ''}>Our Stores</a></li>
-              <li><a href="#blog" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('blog-page'); }} className={currentPage === 'blog-page' ? 'active-link' : ''}>Blog</a></li>
-            </ul>
-          </nav>
+          <Navigation onNavigate={onNavigate} currentPage={currentPage} />
 
           <div className="header-right">
             <button className="icon-btn search-btn" onClick={() => setIsSearchOpen(true)}>
@@ -112,7 +118,7 @@ const Header = ({ onNavigate, currentPage, isAuthenticated, setIsAuthenticated }
             <button className="icon-btn cart-btn" onClick={() => onNavigate && onNavigate('cart')} style={{ marginLeft: '10px' }}>
               <div className="cart-icon-wrapper">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                <span className="cart-badge">0</span>
+                {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
               </div>
             </button>
           </div>

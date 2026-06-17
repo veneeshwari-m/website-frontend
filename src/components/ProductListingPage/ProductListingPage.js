@@ -1,6 +1,39 @@
 import React, { useState, useEffect } from 'react';
+import { GraphQLClient, gql } from 'graphql-request';
 import './ProductListingPage.css';
 import '../ProductGrid/ProductGrid.css';
+
+const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
+
+const GET_ALL_PRODUCTS = gql`
+  query GetAllProducts($search: String) {
+    getAllProducts(search: $search) {
+      id
+      name
+      price
+      mrp
+      discountPercentage
+      images
+      brand
+      productCategoriesID
+      variants {
+        color
+        size
+        stock
+      }
+    }
+  }
+`;
+
+const ADD_TO_CART = gql`
+  mutation AddToCart($userId: ID!, $shopId: ID!, $productId: ID!, $quantity: Float!) {
+    addToCart(userId: $userId, shopId: $shopId, productId: $productId, quantity: $quantity) {
+      id
+      totalQuantity
+      subTotal
+    }
+  }
+`;
 
 const allProducts = [
   // Boys
@@ -56,9 +89,76 @@ const allProducts = [
   })
 ];
 
-const ProductListingPage = ({ gender = "Boys", initialCategory = "Traditional" }) => {
+const ProductListingPage = ({ gender = "Boys", initialCategory = "Traditional", categoryId = null }) => {
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [dynamicProducts, setDynamicProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+
+  const handleSelectProduct = (product) => {
+    setSelectedProduct(product);
+    setCurrentImageIndex(0);
+    setQuantity(1);
+  };
+
+  const handleNextImage = (e) => {
+    e.stopPropagation();
+    if (selectedProduct) {
+      const images = (selectedProduct.raw && selectedProduct.raw.images) || selectedProduct.images || [selectedProduct.img];
+      if (Array.isArray(images) && images.length > 0) {
+        setCurrentImageIndex((prev) => (prev + 1) % images.length);
+      }
+    }
+  };
+
+  const handlePrevImage = (e) => {
+    e.stopPropagation();
+    if (selectedProduct) {
+      const images = (selectedProduct.raw && selectedProduct.raw.images) || selectedProduct.images || [selectedProduct.img];
+      if (Array.isArray(images) && images.length > 0) {
+        setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+      }
+    }
+  };
+
+  const handleAddToCart = async (e) => {
+    e.stopPropagation();
+    if (!selectedProduct) return;
+    
+    try {
+      const client = new GraphQLClient(GRAPHQL_ENDPOINT);
+      let userId = localStorage.getItem('guestId');
+      if (!userId) {
+        userId = 'guest_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('guestId', userId);
+      }
+      
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        if (parsed && parsed.id) userId = parsed.id;
+      }
+
+      const variables = {
+        userId: userId,
+        shopId: "default",
+        productId: selectedProduct.id.toString(),
+        quantity: quantity
+      };
+
+      await client.request(ADD_TO_CART, variables);
+      
+      alert('Product added to cart successfully!');
+      setSelectedProduct(null);
+      // Dispatch event to update cart count in header
+      window.dispatchEvent(new Event('cartUpdated'));
+    } catch (err) {
+      console.error('Add to cart error:', err);
+      alert('Failed to add to cart. Please try again.');
+    }
+  };
 
   let categories;
   if (gender === "NewBorn") {
@@ -67,6 +167,8 @@ const ProductListingPage = ({ gender = "Boys", initialCategory = "Traditional" }
     categories = ["All Categories", "Festival Collection", "Birthday Collection"];
   } else if (gender === "Girls") {
     categories = ["All Categories", "Traditional", "Pattu Pavadai", "Chettinad Cotton", "Modern", "Nightwear"];
+  } else if (gender === "Dynamic") {
+    categories = [initialCategory];
   } else {
     categories = ["All Categories", "Traditional", "Modern", "Nightwear"];
   }
@@ -75,7 +177,39 @@ const ProductListingPage = ({ gender = "Boys", initialCategory = "Traditional" }
     setActiveCategory(initialCategory);
   }, [initialCategory, gender]);
 
-  const genderProducts = allProducts.filter(p => p.gender === gender);
+  useEffect(() => {
+    if (gender === "Dynamic") {
+      const fetchProducts = async () => {
+        setLoading(true);
+        try {
+          const client = new GraphQLClient(GRAPHQL_ENDPOINT);
+          const data = await client.request(GET_ALL_PRODUCTS, { search: "" });
+          if (data && data.getAllProducts) {
+            // Filter products that belong to the current category ID
+            const filtered = data.getAllProducts.filter(p => p.productCategoriesID === categoryId);
+            setDynamicProducts(filtered);
+          }
+        } catch (err) {
+          console.error("Failed to fetch products:", err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchProducts();
+    }
+  }, [gender, categoryId]);
+
+  const genderProducts = gender === "Dynamic" ? dynamicProducts.map(p => ({
+    id: p.id,
+    gender: "Dynamic",
+    category: initialCategory,
+    name: p.name,
+    price: `Rs. ${p.price}`,
+    img: (Array.isArray(p.images) && p.images.length > 0) ? p.images[0] : (p.images || "https://placehold.co/300x400/fafafa/8a2b8f?text=Product"),
+    discount: p.discountPercentage ? `-${p.discountPercentage}%` : null,
+    raw: p
+  })) : allProducts.filter(p => p.gender === gender);
+
   const filteredProducts = activeCategory === "All Categories" 
     ? genderProducts 
     : genderProducts.filter(p => p.category === activeCategory);
@@ -140,8 +274,13 @@ const ProductListingPage = ({ gender = "Boys", initialCategory = "Traditional" }
           </div>
 
           <div className="plp-grid">
-            {filteredProducts.map(product => (
-              <div key={product.id} className="product-card">
+            {loading ? (
+              <div style={{ padding: '50px', textAlign: 'center', gridColumn: '1 / -1', fontSize: '18px', color: '#666' }}>Loading products...</div>
+            ) : filteredProducts.length === 0 ? (
+              <div style={{ padding: '50px', textAlign: 'center', gridColumn: '1 / -1', fontSize: '18px', color: '#666' }}>No products found in this category.</div>
+            ) : (
+              filteredProducts.map(product => (
+                <div key={product.id} className="product-card">
                 <div className="product-image-container" style={{height: '350px', position: 'relative'}}>
                   {product.discount && (
                     <div className="discount-badge" style={{
@@ -159,15 +298,16 @@ const ProductListingPage = ({ gender = "Boys", initialCategory = "Traditional" }
                       {product.discount}
                     </div>
                   )}
-                  <img src={product.img} alt={product.name} style={{height: '100%', objectFit: 'cover'}} />
+                  <img src={product.img} alt={product.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
                 </div>
                 <div className="product-info">
                   <h3 className="product-title">{product.name}</h3>
                   <p className="product-price">{product.price}</p>
-                  <button className="select-options-btn" onClick={() => setSelectedProduct(product)}>Select Options</button>
+                  <button className="select-options-btn" onClick={() => handleSelectProduct(product)}>Select Options</button>
                 </div>
               </div>
-            ))}
+              ))
+            )}
           </div>
         </main>
       </div>
@@ -177,8 +317,41 @@ const ProductListingPage = ({ gender = "Boys", initialCategory = "Traditional" }
           <div className="quick-view-modal-content" onClick={e => e.stopPropagation()}>
             <button className="quick-view-close" onClick={() => setSelectedProduct(null)}>✕</button>
             <div className="quick-view-body">
-              <div className="quick-view-image">
-                <img src={selectedProduct.img} alt={selectedProduct.name} />
+              <div className="quick-view-image" style={{ position: 'relative' }}>
+                <img 
+                  src={
+                    (selectedProduct.raw && Array.isArray(selectedProduct.raw.images)) ? selectedProduct.raw.images[currentImageIndex] : 
+                    (Array.isArray(selectedProduct.images) ? selectedProduct.images[currentImageIndex] : (selectedProduct.img || "https://placehold.co/300x400/e8e8e8/8a2b8f?text=Product"))
+                  } 
+                  alt={selectedProduct.name} 
+                  onError={(e) => { e.target.src = "https://placehold.co/300x400/e8e8e8/8a2b8f?text=Product" }}
+                />
+                {((selectedProduct.raw && selectedProduct.raw.images && selectedProduct.raw.images.length > 1) || (selectedProduct.images && selectedProduct.images.length > 1)) && (
+                  <>
+                    <button 
+                      onClick={handlePrevImage}
+                      style={{
+                        position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)',
+                        width: '50px', height: '50px', borderRadius: '50%', backgroundColor: 'white',
+                        border: '1px solid #8a2b8f', color: '#111', fontSize: '20px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                        boxShadow: '0 2px 5px rgba(0,0,0,0.1)', zIndex: 10
+                      }}>
+                      ❮
+                    </button>
+                    <button 
+                      onClick={handleNextImage}
+                      style={{
+                        position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)',
+                        width: '50px', height: '50px', borderRadius: '50%', backgroundColor: 'white',
+                        border: '1px solid #8a2b8f', color: '#111', fontSize: '20px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                        boxShadow: '0 2px 5px rgba(0,0,0,0.1)', zIndex: 10
+                      }}>
+                      ❯
+                    </button>
+                  </>
+                )}
               </div>
               <div className="quick-view-details">
                 <h2 className="quick-view-title">{selectedProduct.name}</h2>
@@ -195,22 +368,37 @@ const ProductListingPage = ({ gender = "Boys", initialCategory = "Traditional" }
                   <p>Dress your little princess in pure elegance with this stunning Red & Green Banarasi Pattu Coat Gown from Prince N Princess - trusted by 10L+ happy parents across India.</p>
                   <p>Puff sleeves with a gold Banarasi border cuff complete the royal look. The soft cotton inner lining gently protects your baby's delicate skin for all-day comfort. Perfect for naming ceremony, half saree function, mottai ceremony, temple visit, wedding, and festive photoshoots.</p>
                   
-                  <div className="product-details-list" style={{ marginTop: '25px' }}>
-                    <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: '#333', marginBottom: '15px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>PRODUCT DETAILS</h3>
-                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: '2', color: '#444', fontSize: '14.5px' }}>
-                      <li><strong style={{ fontWeight: 600 }}>Color:</strong> Yellow & Green</li>
-                      <li><strong style={{ fontWeight: 600 }}>Material:</strong> Premium Silk Coat Top with Banarasi Silk Skirt</li>
-                      <li><strong style={{ fontWeight: 600 }}>Embellishment:</strong> Scallop Aari Work Yoke with Gold Stonework & Circular Motifs</li>
-                      <li><strong style={{ fontWeight: 600 }}>Neck:</strong> Open-Front Coat Style with Tassel Tie</li>
-                      <li><strong style={{ fontWeight: 600 }}>Sleeves:</strong> Puff Sleeves with Gold Banarasi Cuff Border</li>
-                      <li><strong style={{ fontWeight: 600 }}>Closure:</strong> Back Zip</li>
-                      <li><strong style={{ fontWeight: 600 }}>Lining:</strong> Soft Cotton Lining to Protect Delicate Skin</li>
-                      <li><strong style={{ fontWeight: 600 }}>Wash Care:</strong> Normal Wash (Wash dark colours separately)</li>
-                      <li><strong style={{ fontWeight: 600 }}>Iron Care:</strong> Warm Iron</li>
+                  <div className="product-details-list" style={{ marginTop: '30px' }}>
+                    <h3 style={{ fontSize: '15px', color: '#333', marginBottom: '15px', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 'normal' }}>PRODUCT DETAILS</h3>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: '1.8', color: '#444', fontSize: '15px' }}>
+                      <li>Color: Yellow & Green</li>
+                      <li>Material: Premium Silk Coat Top with Banarasi Silk Skirt</li>
+                      <li>Embellishment: Scallop Aari Work Yoke with Gold Stonework & Circular Motifs</li>
+                      <li>Neck: Open-Front Coat Style with Tassel Tie</li>
+                      <li>Sleeves: Puff Sleeves with Gold Banarasi Cuff Border</li>
+                      <li>Closure: Back Zip</li>
+                      <li>Lining: Soft Cotton Lining to Protect Delicate Skin</li>
+                      <li>Wash Care: Normal Wash (Wash dark colours separately)</li>
+                      <li>Iron Care: Warm Iron</li>
                     </ul>
-                    <p style={{ marginTop: '25px', fontSize: '14px', color: '#666', lineHeight: '1.6' }}>
+                    <p style={{ marginTop: '20px', fontSize: '15px', color: '#444', lineHeight: '1.6' }}>
                       Note: Color may vary slightly due to photographic lighting or device display settings.
                     </p>
+                  </div>
+
+                  <div className="quick-view-actions" style={{ marginTop: '30px' }}>
+                    <div style={{ display: 'flex', gap: '15px', marginBottom: '15px', height: '50px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc', borderRadius: '4px', padding: '0 15px', width: '130px', justifyContent: 'space-between' }}>
+                        <button onClick={(e) => { e.stopPropagation(); setQuantity(q => Math.max(1, q - 1)); }} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#666' }}>−</button>
+                        <span style={{ fontSize: '16px', color: '#333' }}>{quantity}</span>
+                        <button onClick={(e) => { e.stopPropagation(); setQuantity(q => q + 1); }} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#666' }}>+</button>
+                      </div>
+                      <button onClick={handleAddToCart} style={{ flex: 1, backgroundColor: '#8a2b8f', color: 'white', border: 'none', borderRadius: '4px', fontWeight: '600', fontSize: '16px', cursor: 'pointer' }}>Add to Cart</button>
+                    </div>
+                    <button onClick={(e) => { e.stopPropagation(); handleAddToCart(e); /* Then redirect to cart/checkout */ }} style={{ width: '100%', backgroundColor: '#8a2b8f', color: 'white', border: 'none', borderRadius: '4px', fontWeight: '600', fontSize: '16px', cursor: 'pointer', padding: '15px 0', marginBottom: '25px' }}>Buy it now</button>
+                    <a href="#/" style={{ color: '#222', textDecoration: 'none', fontWeight: '500', fontSize: '15px', display: 'flex', alignItems: 'center', gap: '5px' }} onClick={(e) => { e.preventDefault(); }}>
+                      View Full Details <span style={{ fontSize: '18px', lineHeight: 1 }}>»</span>
+                    </a>
                   </div>
                 </div>
               </div>

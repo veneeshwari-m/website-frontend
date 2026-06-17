@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './UserDashboard.css';
+import AddProduct from '../AddProduct/AddProduct';
+
 
 const UserDashboard = ({ onNavigate, onLogout }) => {
   const [activeTab, setActiveTab] = useState('orders');
@@ -39,6 +41,12 @@ const UserDashboard = ({ onNavigate, onLogout }) => {
               onClick={() => setActiveTab('profile')}
             >
               Profile
+            </button>
+            <button
+              className={`nav-btn ${activeTab === 'add-product' ? 'active' : ''}`}
+              onClick={() => setActiveTab('add-product')}
+            >
+              Add Product
             </button>
           </nav>
         </div>
@@ -107,6 +115,11 @@ const UserDashboard = ({ onNavigate, onLogout }) => {
             <div className="profile-card">
               <p>Profile details will appear here.</p>
             </div>
+          </div>
+        )}
+        {activeTab === 'add-product' && (
+          <div className="add-product-section">
+            <AddProduct />
           </div>
         )}
       </main>
