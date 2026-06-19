@@ -38,6 +38,9 @@ import ContactUs from './components/ContactUs/ContactUs';
 import Privacy from './components/Privacy/Privacy';
 import Terms from './components/Terms/Terms';
 import AboutUs from './components/AboutUs/AboutUs';
+import HomePage from './components/HomePage/HomePage';
+import Checkout from './components/Checkout/Checkout';
+import OrderSuccess from './components/OrderSuccess/OrderSuccess';
 
 function ScrollToTop() {
   const { pathname } = useLocation();

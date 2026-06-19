@@ -1,9 +1,35 @@
 import React, { useState, useEffect } from 'react';
+import { GraphQLClient, gql } from 'graphql-request';
 import './Cart.css';
 
+const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || "http://localhost:2000/graphql";
+
+const GET_CART = gql`
+  query GetCartByUserId($userId: ID!) {
+    getCartByUserId(userId: $userId) {
+      id
+      userId
+      shopId
+      products {
+        productId
+        quantity
+        price
+        mrp
+        productName
+        productImage
+      }
+      subTotal
+      status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 const Cart = ({ onNavigate }) => {
-  const [quantity, setQuantity] = useState(2);
-  const [timeLeft, setTimeLeft] = useState({ minutes: 1, seconds: 57 });
+  const [cart, setCart] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [timeLeft, setTimeLeft] = useState({ minutes: 10, seconds: 0 });
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -20,8 +46,53 @@ const Cart = ({ onNavigate }) => {
     return `${String(time.minutes).padStart(2, '0')}m ${String(time.seconds).padStart(2, '0')}s`;
   };
 
-  const price = 1999;
-  const total = price * quantity;
+  const fetchCart = async () => {
+    try {
+      setLoading(true);
+      let token = localStorage.getItem('token');
+      let userId = localStorage.getItem('guestId');
+      
+      if (token) {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user && user.id) userId = user.id;
+      }
+
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
+
+      const client = new GraphQLClient(GRAPHQL_ENDPOINT);
+      if (token) client.setHeader('Authorization', `Bearer ${token}`);
+
+      const data = await client.request(GET_CART, { userId });
+      setCart(data.getCartByUserId);
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  if (loading) {
+    return <div style={{ padding: '100px', textAlign: 'center' }}>Loading cart...</div>;
+  }
+
+  if (!cart || !cart.products || cart.products.length === 0) {
+    return (
+      <div className="cart-page">
+        <div className="cart-container-filled" style={{ textAlign: 'center', padding: '100px 20px' }}>
+          <h2>Your Cart is Empty</h2>
+          <p>Go back to the store to add some products!</p>
+          <button className="checkout-btn" style={{ maxWidth: '200px', margin: '20px auto' }} onClick={() => onNavigate('home')}>Continue Shopping</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="cart-page">
@@ -45,79 +116,29 @@ const Cart = ({ onNavigate }) => {
               <div className="col-total">Total</div>
             </div>
             
-            <div className="cart-item">
-              <div className="col-product item-details">
-                <img src="/images/frock1.png" alt="Baby Girl Yellow & Green Banarasi Pattu Gown" className="cart-item-img" />
-                <div className="item-info">
-                  <h3>Baby Girl Yellow & Green<br/>Banarasi Pattu Gown - Aari Work<br/>Coat Pattu Gown Set PG706</h3>
-                  <p>Size: M</p>
-                  <button className="remove-btn">Remove</button>
-                </div>
-              </div>
-              <div className="col-price">
-                Rs. {price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-              </div>
-              <div className="col-quantity">
-                <div className="quantity-selector">
-                  <button onClick={() => setQuantity(q => Math.max(1, q - 1))}>−</button>
-                  <span>{quantity}</span>
-                  <button onClick={() => setQuantity(q => q + 1)}>+</button>
-                </div>
-              </div>
-              <div className="col-total">
-                Rs.<br/>{total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-              </div>
-            </div>
-
-            <div className="cart-features-row">
-              <div className="feature-box">
-                <div className="feature-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                </div>
-                <h5>Have Questions?</h5>
-                <p>Our experts are here to help! Call us free.</p>
-              </div>
-              <div className="feature-box">
-                <div className="feature-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                </div>
-                <h5>Secure Shopping</h5>
-                <p>All transactions are protected by SSL...</p>
-              </div>
-              <div className="feature-box">
-                <div className="feature-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                </div>
-                <h5>Privacy Protection</h5>
-                <p>Your privacy is always our top priority.</p>
-              </div>
-            </div>
-
-            <div className="cart-recommendations">
-              <h3 className="recommendations-title">You may also like...</h3>
-              <div className="recommendations-grid">
-                <div className="recommendation-card">
-                  <div className="rec-img-wrapper">
-                    <img src="/images/frock2.png" alt="Baby Girl Red & Rose Gold Banarasi Pattu Gown" className="rec-img" />
-                  </div>
-                  <div className="rec-details">
-                    <h4>Baby Girl Red & Rose Gold Banarasi Pattu Gown - Aar...</h4>
-                    <p className="rec-price">Rs. 1,999.00</p>
-                    <button className="rec-select-options">Select Options</button>
+            {cart.products.map((item, idx) => (
+              <div key={idx} className="cart-item">
+                <div className="col-product item-details">
+                  <img src={item.productImage} alt={item.productName} className="cart-item-img" onError={(e) => { e.target.src = "https://placehold.co/80x100/e8e8e8/8a2b8f?text=Item" }} />
+                  <div className="item-info">
+                    <h3>{item.productName}</h3>
+                    <p>Size: M</p>
+                    {/* Add remove logic if needed */}
                   </div>
                 </div>
-                <div className="recommendation-card">
-                  <div className="rec-img-wrapper">
-                    <img src="/images/frock3.png" alt="Party Gown for Girl" className="rec-img" />
-                  </div>
-                  <div className="rec-details">
-                    <h4>Party Gown for Girl - Baby Girl Purple Sequin Lace &...</h4>
-                    <p className="rec-price">Rs. 1,399.00</p>
-                    <button className="rec-select-options">Select Options</button>
+                <div className="col-price">
+                  Rs. {item.price?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                </div>
+                <div className="col-quantity">
+                  <div className="quantity-selector">
+                    <span style={{ paddingLeft: '10px' }}>{item.quantity}</span>
                   </div>
                 </div>
+                <div className="col-total">
+                  Rs.<br/>{(item.price * item.quantity)?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                </div>
               </div>
-            </div>
+            ))}
           </div>
 
           <div className="cart-sidebar">
@@ -126,47 +147,63 @@ const Cart = ({ onNavigate }) => {
               <textarea placeholder="Add Order Note" className="order-note-textarea"></textarea>
             </div>
             
-            <div className="sidebar-section estimate-shipping-section">
-              <hr className="sidebar-divider" />
-              <h4 className="estimate-shipping-heading">Estimate Shipping</h4>
+            <div className="sidebar-divider"></div>
+
+            <div className="sidebar-section">
+              <h4>Estimate Shipping</h4>
               
               <p className="shipping-label">Country/region</p>
-              <div className="select-container">
-                <select className="shipping-select">
-                  <option>United States</option>
-                </select>
-                <span className="select-arrow"></span>
-              </div>
+              <select className="shipping-select">
+                <option>United States</option>
+                <option>India</option>
+              </select>
 
               <p className="shipping-label">Province</p>
-              <div className="select-container">
-                <select className="shipping-select">
-                  <option>Alabama</option>
-                </select>
-                <span className="select-arrow"></span>
-              </div>
+              <select className="shipping-select">
+                <option>Alabama</option>
+                <option>California</option>
+              </select>
 
               <p className="shipping-label">Postal/ZIP code</p>
               <input type="text" className="shipping-input" placeholder="Postal/ZIP code" />
 
               <button className="estimate-btn">Estimate Shipping</button>
-              
-              <hr className="sidebar-divider" />
-              
-              <div className="subtotal-container">
-                <span className="subtotal-label">Subtotal:</span>
-                <span className="subtotal-value">Rs. 1,999.00</span>
+            </div>
+
+            <div className="sidebar-divider"></div>
+
+            <div className="sidebar-subtotal">
+              <div className="subtotal-row">
+                <span>Subtotal</span>
+                <span>Rs. {cart.subTotal?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
-              <p className="tax-shipping-text">Taxes and shipping and discounts calculated at checkout</p>
-              
-              <hr className="sidebar-divider" />
-              
-              <div className="discount-container">
+              <p className="subtotal-note">Taxes and shipping and discounts calculated at checkout</p>
+            </div>
+
+            <div className="sidebar-divider"></div>
+
+            <div className="discount-section">
+              <div className="discount-input-group">
                 <input type="text" className="discount-input" placeholder="Discount Code" />
                 <button className="apply-btn">Apply</button>
               </div>
+            </div>
 
-              <button className="checkout-btn">Check Out</button>
+            <button className="checkout-btn" onClick={() => onNavigate('payment')}>Check Out</button>
+
+            <div className="sidebar-footer-info">
+              <div className="info-block">
+                <h5>Delivery Information</h5>
+                <p>Exchange within 7 days, please make sure the items are in undamaged condition.</p>
+              </div>
+              <div className="info-block">
+                <h5>Quality Guarantee</h5>
+                <p>Encountering issues with your tights? Reach out to us for assistance</p>
+              </div>
+              <div className="info-block">
+                <h5>Payment Support</h5>
+                <img src="/images/razorpay.png" alt="Razorpay" className="razorpay-logo" onError={(e) => { e.target.style.display = 'none' }} />
+              </div>
             </div>
 
             <div className="sidebar-section delivery-info-section">

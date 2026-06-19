@@ -27,7 +27,7 @@ const Header = ({ onNavigate, currentPage, isAuthenticated, setIsAuthenticated }
       <header className="main-header">
         <div className="header-container">
           <div className="header-left">
-            <img src="/images/logo.png" alt="shop Logo" className="logo" onClick={() => onNavigate && onNavigate('home')} style={{ cursor: 'pointer' }} />
+            <img src="/images/log1.png" alt="shop Logo" className="logo" onClick={() => onNavigate && onNavigate('home')} style={{ cursor: 'pointer' }} />
           </div>
 
           <nav className="header-center">

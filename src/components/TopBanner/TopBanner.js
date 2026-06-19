@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './TopBanner.css';
+import { FaLessThan ,  FaGreaterThan } from "react-icons/fa";
+
 
 const messages = [
   "Welcome to our store",
@@ -20,18 +22,18 @@ const TopBanner = () => {
   useEffect(() => {
     const timer = setInterval(() => {
       nextSlide();
-    }, 4000);
+    }, 2000);
     return () => clearInterval(timer);
   }, []);
 
   return (
     <div className="top-banner">
       <div className="top-banner-content">
-        <button className="banner-nav-btn" onClick={prevSlide}>&lt;</button>
+        <button className="banner-nav-btn" onClick={prevSlide}><FaLessThan /></button>
         <div className="banner-text-container">
           <span className="banner-text" key={currentIndex}>{messages[currentIndex]}</span>
         </div>
-        <button className="banner-nav-btn" onClick={nextSlide}>&gt;</button>
+        <button className="banner-nav-btn" onClick={nextSlide}><FaGreaterThan /></button>
       </div>
     </div>
   );

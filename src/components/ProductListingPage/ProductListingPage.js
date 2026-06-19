@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { GraphQLClient, gql } from 'graphql-request';
+import { useNavigate } from 'react-router-dom';
 import './ProductListingPage.css';
 import '../ProductGrid/ProductGrid.css';
 
@@ -56,9 +58,77 @@ const allProducts = [
   })
 ];
 
-const ProductListingPage = ({ gender = "Boys", initialCategory = "Traditional" }) => {
+const ProductListingPage = ({ gender = "Boys", initialCategory = "Traditional", categoryId = null }) => {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [dynamicProducts, setDynamicProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+
+  const handleSelectProduct = (product) => {
+    setSelectedProduct(product);
+    setCurrentImageIndex(0);
+    setQuantity(1);
+  };
+
+  const handleNextImage = (e) => {
+    e.stopPropagation();
+    if (selectedProduct) {
+      const images = (selectedProduct.raw && selectedProduct.raw.images) || selectedProduct.images || [selectedProduct.img];
+      if (Array.isArray(images) && images.length > 0) {
+        setCurrentImageIndex((prev) => (prev + 1) % images.length);
+      }
+    }
+  };
+
+  const handlePrevImage = (e) => {
+    e.stopPropagation();
+    if (selectedProduct) {
+      const images = (selectedProduct.raw && selectedProduct.raw.images) || selectedProduct.images || [selectedProduct.img];
+      if (Array.isArray(images) && images.length > 0) {
+        setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+      }
+    }
+  };
+
+  const handleAddToCart = async (e) => {
+    e.stopPropagation();
+    if (!selectedProduct) return;
+    
+    try {
+      const client = new GraphQLClient(GRAPHQL_ENDPOINT);
+      let userId = localStorage.getItem('guestId');
+      if (!userId) {
+        userId = 'guest_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('guestId', userId);
+      }
+      
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        if (parsed && parsed.id) userId = parsed.id;
+      }
+
+      const variables = {
+        userId: userId,
+        shopId: "default",
+        productId: selectedProduct.id.toString(),
+        quantity: quantity
+      };
+
+      await client.request(ADD_TO_CART, variables);
+      
+      setSelectedProduct(null);
+      // Dispatch event to update cart count in header
+      window.dispatchEvent(new Event('cartUpdated'));
+      navigate('/cart');
+    } catch (err) {
+      console.error('Add to cart error:', err);
+      alert('Failed to add to cart. Please try again.');
+    }
+  };
 
   let categories;
   if (gender === "NewBorn") {
