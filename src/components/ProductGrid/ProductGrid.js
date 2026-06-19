@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './ProductGrid.css';
+import RazorpayCheckoutModal from '../RazorpayCheckout/RazorpayCheckoutModal';
 
 const products = [
   { id: 1, name: "Baby Girl Yellow & Green Banarasi Pattu Gown - Aari...", price: "Rs. 1,999.00", img: "/images/frock1.png", images: ["/images/frock1.png", "/images/frock2.png", "/images/frock3.png"] },
@@ -13,6 +14,18 @@ const ProductGrid = ({ onNavigate }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+
+  const handleBuyNow = (e) => {
+    e.stopPropagation();
+    setIsProcessing(true);
+    setTimeout(() => {
+      setIsProcessing(false);
+      setSelectedProduct(null);
+      setShowCheckoutModal(true);
+    }, 1500);
+  };
 
   const handleSelectProduct = (product) => {
     setSelectedProduct(product);
@@ -80,7 +93,7 @@ const ProductGrid = ({ onNavigate }) => {
                       style={{
                         position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)',
                         width: '50px', height: '50px', borderRadius: '50%', backgroundColor: 'white',
-                        border: '1px solid #8a2b8f', color: '#111', fontSize: '20px',
+                        border: '1px solid #0F2D5C', color: '#111', fontSize: '20px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                         boxShadow: '0 2px 5px rgba(0,0,0,0.1)', zIndex: 10
                       }}>
@@ -91,7 +104,7 @@ const ProductGrid = ({ onNavigate }) => {
                       style={{
                         position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)',
                         width: '50px', height: '50px', borderRadius: '50%', backgroundColor: 'white',
-                        border: '1px solid #8a2b8f', color: '#111', fontSize: '20px',
+                        border: '1px solid #0F2D5C', color: '#111', fontSize: '20px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                         boxShadow: '0 2px 5px rgba(0,0,0,0.1)', zIndex: 10
                       }}>
@@ -140,10 +153,26 @@ const ProductGrid = ({ onNavigate }) => {
                         <span style={{ fontSize: '16px', color: '#333' }}>{quantity}</span>
                         <button onClick={(e) => { e.stopPropagation(); setQuantity(q => q + 1); }} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#666' }}>+</button>
                       </div>
-                      <button onClick={(e) => { e.stopPropagation(); setSelectedProduct(null); onNavigate('cart'); }} style={{ flex: 1, backgroundColor: '#8a2b8f', color: 'white', border: 'none', borderRadius: '4px', fontWeight: '600', fontSize: '16px', cursor: 'pointer' }}>Add to Cart</button>
+                      <button onClick={(e) => { e.stopPropagation(); setSelectedProduct(null); onNavigate('cart'); }} style={{ flex: 1, backgroundColor: '#0F2D5C', color: 'white', border: 'none', borderRadius: '4px', fontWeight: '600', fontSize: '16px', cursor: 'pointer' }}>Add to Cart</button>
                     </div>
-                    <button onClick={(e) => { e.stopPropagation(); setSelectedProduct(null); onNavigate('checkout'); }} style={{ width: '100%', backgroundColor: '#8a2b8f', color: 'white', border: 'none', borderRadius: '4px', fontWeight: '600', fontSize: '16px', cursor: 'pointer', padding: '15px 0', marginBottom: '25px' }}>Buy it now</button>
-                    <a href="#/" style={{ color: '#222', textDecoration: 'none', fontWeight: '500', fontSize: '15px', display: 'flex', alignItems: 'center', gap: '5px' }} onClick={(e) => { e.preventDefault(); }}>
+                    <button 
+                      onClick={handleBuyNow} 
+                      disabled={isProcessing}
+                      style={{ width: '100%', backgroundColor: '#0F2D5C', color: 'white', border: 'none', borderRadius: '4px', fontWeight: '600', fontSize: '16px', cursor: isProcessing ? 'default' : 'pointer', padding: '15px 0', marginBottom: '25px', opacity: isProcessing ? 0.9 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      {isProcessing ? (
+                        <>
+                          Processing
+                          <svg className="processing-spinner" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '10px', animation: 'spin 1s linear infinite' }}>
+                            <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+                          </svg>
+                          <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+                        </>
+                      ) : (
+                        'Buy it now'
+                      )}
+                    </button>
+                    <a href="#/" style={{ color: '#222', textDecoration: 'none', fontWeight: '500', fontSize: '15px', display: 'flex', alignItems: 'center', gap: '5px' }} onClick={(e) => { e.preventDefault(); setSelectedProduct(null); onNavigate('pdp'); }}>
                       View Full Details <span style={{ fontSize: '18px', lineHeight: 1 }}>»</span>
                     </a>
                   </div>
@@ -153,6 +182,11 @@ const ProductGrid = ({ onNavigate }) => {
           </div>
         </div>
       )}
+
+      <RazorpayCheckoutModal 
+        isOpen={showCheckoutModal} 
+        onClose={() => setShowCheckoutModal(false)} 
+      />
     </section>
   );
 };

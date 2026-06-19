@@ -55,7 +55,7 @@
 }
 
 .cart-urgency-banner span {
-  color: #8a2b8f;
+  color: #0F2D5C;
   font-weight: bold;
 }
 
@@ -71,7 +71,7 @@
 
 .cart-table-header {
   display: flex;
-  border-bottom: 1px solid #8a2b8f;
+  border-bottom: 1px solid #0F2D5C;
   padding-bottom: 15px;
   font-family: Georgia, 'Times New Roman', Times, serif;
   font-size: 16px;
@@ -87,7 +87,7 @@
 .cart-item {
   display: flex;
   padding-bottom: 30px;
-  border-bottom: 1px solid #8a2b8f;
+  border-bottom: 1px solid #0F2D5C;
   align-items: center;
 }
 
@@ -138,7 +138,7 @@
 .quantity-selector {
   display: inline-flex;
   align-items: center;
-  border: 1px solid #8a2b8f;
+  border: 1px solid #0F2D5C;
   border-radius: 0px;
   padding: 0 10px;
   width: 90px;
@@ -166,6 +166,23 @@
   background-color: #f8f9fc;
   padding: 30px;
   border-radius: 4px;
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+.cart-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cart-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cart-sidebar::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 4px;
 }
 
 .sidebar-section {
@@ -183,7 +200,7 @@
 .order-note-textarea {
   width: 100%;
   height: 120px;
-  border: 1px solid #8a2b8f;
+  border: 1px solid #0F2D5C;
   border-radius: 0px;
   padding: 15px;
   font-family: 'Inter', sans-serif;
@@ -201,19 +218,389 @@
   font-size: 14px;
   color: #555;
   margin: 0 0 10px 0;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.sidebar-divider {
+  border: 0;
+  border-top: 1px solid #0F2D5C;
+  margin: 20px 0;
+}
+
+.estimate-shipping-heading {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 16px;
+  font-weight: normal;
+  color: #333;
+  margin: 0 0 15px 0;
+}
+
+.select-container {
+  position: relative;
+  margin-bottom: 20px;
 }
 
 .shipping-select {
   width: 100%;
   height: 45px;
-  border: 1px solid #ddd;
-  border-radius: 0px;
+  border: 1px solid #0F2D5C;
+  border-radius: 2px;
   padding: 0 15px;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
-  color: #333;
+  color: #555;
   background-color: white;
   appearance: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-right: 1px solid #333;
+  border-bottom: 1px solid #333;
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+
+.shipping-input {
+  width: 100%;
+  height: 45px;
+  border: 1px solid #0F2D5C;
+  border-radius: 2px;
+  padding: 0 15px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #555;
+  background-color: white;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
+
+.shipping-input::placeholder {
+  color: #888;
+}
+
+.estimate-btn {
+  width: 100%;
+  height: 45px;
+  background-color: #0F2D5C;
+  color: white;
+  border: none;
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-bottom: 10px;
+}
+
+.estimate-btn:hover {
+  background-color: #6a206e;
+}
+
+.subtotal-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 18px;
+  color: #333;
+}
+
+.tax-shipping-text {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 14px;
+  color: #333;
+  margin: 0;
+}
+
+.discount-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.discount-input {
+  flex: 1;
+  height: 45px;
+  border: 1px solid #0F2D5C;
+  border-radius: 2px;
+  padding: 0 15px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #555;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+.discount-input::placeholder {
+  color: #888;
+}
+
+.apply-btn {
+  width: 100px;
+  height: 45px;
+  background-color: #0F2D5C;
+  color: white;
+  border: none;
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.apply-btn:hover {
+  background-color: #6a206e;
+}
+
+.checkout-btn {
+  width: 100%;
+  height: 50px;
+  background-color: #0F2D5C;
+  color: white;
+  border: none;
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.checkout-btn:hover {
+  background-color: #6a206e;
+}
+
+.delivery-info-section {
+  margin-top: 30px;
+}
+
+.info-heading {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 15px;
+  font-weight: normal;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+.mt-15 {
+  margin-top: 20px;
+}
+
+.info-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.cart-features-row {
+  display: flex;
+  gap: 20px;
+  margin-top: 40px;
+  margin-bottom: 50px;
+}
+
+.feature-box {
+  flex: 1;
+  background-color: #f8f9fc;
+  padding: 30px 20px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.feature-icon {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.feature-box h5 {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 15px;
+  font-weight: normal;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+.feature-box p {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.cart-recommendations {
+  margin-top: 30px;
+}
+
+.recommendations-title {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 18px;
+  font-weight: normal;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.recommendations-grid {
+  display: flex;
+  gap: 20px;
+}
+
+.recommendation-card {
+  flex: 1;
+  display: flex;
+  gap: 15px;
+  border: 1px solid #0F2D5C;
+  border-radius: 4px;
+  padding: 15px;
+  background-color: white;
+}
+
+.rec-img-wrapper {
+  width: 80px;
+  height: 100px;
+  flex-shrink: 0;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.rec-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+
+.rec-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.rec-details h4 {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 14px;
+  font-weight: normal;
+  color: #333;
+  margin: 0 0 5px 0;
+  line-height: 1.4;
+}
+
+.rec-price {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 14px;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+.rec-select-options {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 13px;
+  color: #333;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.payment-support-logos {
+  margin-top: 10px;
+}
+
+.cart-trust-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 20px 80px 20px;
+  text-align: center;
+}
+
+.trust-heading {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 28px;
+  font-weight: normal;
+  color: #333;
+  margin: 0 0 15px 0;
+}
+
+.trust-subheading {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 16px;
+  color: #555;
+  margin: 0 0 40px 0;
+}
+
+.trust-scorecards {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.scorecard-wrapper {
+  flex: 1;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  padding: 10px;
+  overflow: hidden;
+}
+
+.scorecard-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.cart-bottom-features {
+  display: flex;
+  gap: 40px;
+  margin-top: 60px;
+  text-align: left;
+}
+
+.bottom-feature-item {
+  flex: 1;
+}
+
+.bottom-feature-icon {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.bottom-feature-item h4 {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 16px;
+  font-weight: normal;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+.bottom-feature-item p {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.bottom-feature-item em {
+  font-style: italic;
 }
 
 @media (max-width: 768px) {
@@ -234,5 +621,12 @@
   .col-price, .col-quantity, .col-total {
     text-align: left;
     width: 100%;
+  }
+  .trust-scorecards {
+    flex-direction: column;
+  }
+  .cart-bottom-features {
+    flex-direction: column;
+    gap: 30px;
   }
 }
