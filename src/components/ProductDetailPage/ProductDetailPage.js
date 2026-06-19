@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { GraphQLClient, gql } from 'graphql-request';
 import './ProductDetailPage.css';
 
+const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || "http://localhost:2000/graphql";
+
 const ProductDetailPage = () => {
+  const navigate = useNavigate();
   const [qty, setQty] = useState(1);
+  const [isAdding, setIsAdding] = useState(false);
   const sizes = ["M", "1Y", "2Y", "3Y", "4Y", "5Y", "6Y", "8Y", "9Y", "10Y", "11Y", "12Y", "13Y"];
   const [activeSize, setActiveSize] = useState("M");
   const images = [
@@ -15,6 +21,60 @@ const ProductDetailPage = () => {
     "/images/frock2.png"
   ];
   const [activeImage, setActiveImage] = useState(images[0]);
+
+  const handleAddToCart = async (goToCart = false) => {
+    try {
+      setIsAdding(true);
+      let token = localStorage.getItem('token');
+      let userId = localStorage.getItem('guestId');
+      
+      if (!userId && !token) {
+        userId = 'guest_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('guestId', userId);
+      }
+
+      if (token) {
+        const user = JSON.parse(localStorage.getItem('user'));
+        userId = user?.id || userId;
+      }
+
+      const client = new GraphQLClient(GRAPHQL_ENDPOINT);
+      if (token) client.setHeader('Authorization', `Bearer ${token}`);
+
+      // Fetch a valid product ID from the backend to ensure checkout works
+      const prodData = await client.request(gql`query { getAllProducts { id } }`);
+      const validProductId = prodData.getAllProducts?.[0]?.id;
+
+      if (!validProductId) {
+        alert("No products available in the database.");
+        setIsAdding(false);
+        return;
+      }
+
+      // Add to cart
+      await client.request(gql`
+        mutation AddToCart($userId: ID!, $shopId: ID!, $productId: ID!, $quantity: Float!) {
+          addToCart(userId: $userId, shopId: $shopId, productId: $productId, quantity: $quantity) {
+            id
+          }
+        }
+      `, {
+        userId,
+        shopId: "default",
+        productId: validProductId,
+        quantity: qty
+      });
+
+      alert("Product added successfully");
+      setIsAdding(false);
+      
+      if (goToCart) navigate('/cart');
+    } catch (err) {
+      console.error(err);
+      alert("Failed to add to cart");
+      setIsAdding(false);
+    }
+  };
 
   return (
     <div className="pdp-page-wrapper">
@@ -94,10 +154,12 @@ const ProductDetailPage = () => {
               <input type="text" className="qty-input" value={qty} readOnly />
               <button className="qty-btn" onClick={() => setQty(qty + 1)}>+</button>
             </div>
-            <button className="add-to-cart-btn">Add to Cart</button>
+            <button className="add-to-cart-btn" onClick={() => handleAddToCart(true)} disabled={isAdding}>
+              {isAdding ? "Adding..." : "Add to Cart"}
+            </button>
           </div>
 
-          <button className="buy-now-btn">Buy it now</button>
+          <button className="buy-now-btn" onClick={() => handleAddToCart(true)} disabled={isAdding}>Buy it now</button>
           <div className="pdp-size-selector">
             <div className="size-label">Size: {activeSize}</div>
             <div className="size-grid">

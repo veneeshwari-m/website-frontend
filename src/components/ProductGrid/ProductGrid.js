@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { GraphQLClient, gql } from 'graphql-request';
+import { useNavigate } from 'react-router-dom';
 import './ProductGrid.css';
 
 const products = [
@@ -9,7 +11,18 @@ const products = [
   { id: 5, name: "Baby Girl Red & Rose Gold Banarasi Pattu Gown - Aari...", price: "Rs. 1,999.00", img: "/images/frock5.png", images: ["/images/frock5.png", "/images/frock4.png", "/images/frock1.png"] },
 ];
 
-const ProductGrid = ({ onNavigate }) => {
+const ADD_TO_CART = gql`
+  mutation AddToCart($userId: ID!, $shopId: ID!, $productId: ID!, $quantity: Float!) {
+    addToCart(userId: $userId, shopId: $shopId, productId: $productId, quantity: $quantity) {
+      id
+      totalQuantity
+      subTotal
+    }
+  }
+`;
+
+const ProductGrid = ({ title, category, categoryId, products = [], onNavigate }) => {
+  const navigate = useNavigate();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -31,6 +44,42 @@ const ProductGrid = ({ onNavigate }) => {
     e.stopPropagation();
     if (selectedProduct && selectedProduct.images) {
       setCurrentImageIndex((prev) => (prev === 0 ? selectedProduct.images.length - 1 : prev - 1));
+    }
+  };
+
+  const handleAddToCart = async (e) => {
+    e.stopPropagation();
+    if (!selectedProduct) return;
+    
+    try {
+      const client = new GraphQLClient(GRAPHQL_ENDPOINT);
+      let userId = localStorage.getItem('guestId');
+      if (!userId) {
+        userId = 'guest_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('guestId', userId);
+      }
+      
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        if (parsed && parsed.id) userId = parsed.id;
+      }
+
+      const variables = {
+        userId: userId,
+        shopId: "default",
+        productId: selectedProduct.id.toString(),
+        quantity: quantity
+      };
+
+      await client.request(ADD_TO_CART, variables);
+      
+      setSelectedProduct(null);
+      window.dispatchEvent(new Event('cartUpdated'));
+      navigate('/cart');
+    } catch (err) {
+      console.error('Add to cart error:', err);
+      alert('Failed to add to cart. Please try again.');
     }
   };
 

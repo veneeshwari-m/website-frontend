@@ -37,6 +37,9 @@ import ContactUs from './components/ContactUs/ContactUs';
 import Privacy from './components/Privacy/Privacy';
 import Terms from './components/Terms/Terms';
 import AboutUs from './components/AboutUs/AboutUs';
+import HomePage from './components/HomePage/HomePage';
+import Checkout from './components/Checkout/Checkout';
+import OrderSuccess from './components/OrderSuccess/OrderSuccess';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -102,160 +105,43 @@ function App() {
   return (
     <div className="App">
       <TopBanner />
-      <Header onNavigate={handleNavigate} currentPage={currentPage} isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
-      {currentPage === 'home' && (
-        <>
-          <Hero onNavigate={handleNavigate} />
-          <ProductGrid onNavigate={handleNavigate} />
-          <PattuCollections onNavigate={handleNavigate} />
-          <PromoBanner />
-          <NewbornFrockGrid onNavigate={handleNavigate} />
-          <ScrollingBanner />
-          <NewArrivalGrid onNavigate={handleNavigate} />
-          <ChettinadCotton onNavigate={handleNavigate} />
-          <JablaFrock />
-          <BoysEthnicWear />
-          <ClearanceBanner />
-          <CottonFrock />
-          <FactoryImages />
-          <InstagramFeed />
-          <OurStores />
-          <GlobalBanner />
-          <StoreQuality />
-          <Features />
-          <Footer onNavigate={handleNavigate} />
-        </>
-      )}
-      {currentPage === 'cart' && <Cart onNavigate={handleNavigate} />}
-      {currentPage === 'kurta-pajama' && (
-        <>
-          <ProductListingPage gender="Boys" initialCategory={plpCategory} />
-          <Footer onNavigate={handleNavigate} />
-        </>
-      )}
-      {currentPage === 'girls-plp' && (
-        <>
-          <ProductListingPage gender="Girls" initialCategory={plpCategory} />
-          <Footer onNavigate={handleNavigate} />
-        </>
-      )}
-      {currentPage === 'newborn-plp' && (
-        <>
-          <ProductListingPage gender="NewBorn" initialCategory={plpCategory} />
-          <Footer onNavigate={handleNavigate} />
-        </>
-      )}
-      {currentPage === 'bestselling-plp' && (
-        <>
-          <ProductListingPage gender="Best Selling" initialCategory={plpCategory} />
-          <Footer onNavigate={handleNavigate} />
-        </>
-      )}
-      {currentPage === 'clearance-plp' && (
-        <>
-          <ProductListingPage gender="Clearance" initialCategory={plpCategory} />
-          <Footer onNavigate={handleNavigate} />
-        </>
-      )}
-      {currentPage === 'stores-page' && (
-        <div style={{ marginTop: '20px' }}>
-          <OurStores />
-          <GlobalBanner />
-          <Features />
-          <Footer onNavigate={handleNavigate} />
-        </div>
-      )}
-      {currentPage === 'blog-page' && (
-        <div style={{ marginTop: '20px' }}>
-          <BlogPage />
-          <GlobalBanner />
-          <Footer onNavigate={handleNavigate} />
-        </div>
-      )}
-      {currentPage === 'pdp' && (
-        <>
-          <ProductDetailPage />
-          <Footer onNavigate={handleNavigate} />
-        </>
-      )}
-      {currentPage === 'order-status' && (
-        <div style={{ marginTop: '20px' }}>
-          <OrderStatus />
-          <GlobalBanner />
-          <StoreQuality />
-          <Features />
-          <Footer onNavigate={handleNavigate} />
-        </div>
-      )}
-      {currentPage === 'payment' && (
-        <div style={{ marginTop: '20px' }}>
-          <Payment />
-          <GlobalBanner />
-          <StoreQuality />
-          <Features />
-          <Footer onNavigate={handleNavigate} />
-        </div>
-      )}
-      {currentPage === 'exchange' && (
-        <div style={{ marginTop: '20px' }}>
-          <Exchange />
-          <GlobalBanner />
-          <StoreQuality />
-          <Features />
-          <Footer onNavigate={handleNavigate} />
-        </div>
-      )}
-      {currentPage === 'shipping' && (
-        <div style={{ marginTop: '20px' }}>
-          <Shipping />
-          <GlobalBanner />
-          <StoreQuality />
-          <Features />
-          <Footer onNavigate={handleNavigate} />
-        </div>
-      )}
-      {currentPage === 'cancellation' && (
-        <div style={{ marginTop: '20px' }}>
-          <Cancellation />
-          <GlobalBanner />
-          <StoreQuality />
-          <Features />
-          <Footer onNavigate={handleNavigate} />
-        </div>
-      )}
-      {currentPage === 'contact' && (
-        <div style={{ marginTop: '20px' }}>
-          <ContactUs />
-          <GlobalBanner />
-          <StoreQuality />
-          <Features />
-          <Footer onNavigate={handleNavigate} />
-        </div>
-      )}
-      {currentPage === 'privacy' && (
-        <div style={{ marginTop: '20px' }}>
-          <Privacy />
-          <GlobalBanner />
-          <StoreQuality />
-          <Features />
-          <Footer onNavigate={handleNavigate} />
-        </div>
-      )}
-      {currentPage === 'terms' && (
-        <div style={{ marginTop: '20px' }}>
-          <Terms />
-          <GlobalBanner />
-          <StoreQuality />
-          <Features />
-          <Footer onNavigate={handleNavigate} />
-        </div>
-      )}
-      {currentPage === 'about-us' && (
-        <div style={{ marginTop: '20px' }}>
-          <AboutUs />
-          <Footer onNavigate={handleNavigate} />
-        </div>
-      )}
+      <Header onNavigate={handleNavigate} isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
+      <Routes>
+        <Route path="/" element={<HomePage onNavigate={handleNavigate} />} />
+        <Route path="/cart" element={<Cart onNavigate={handleNavigate} />} />
+        
+        <Route path="/login" element={
+          <SignIn 
+            onBack={() => { navigate(intendedPage || '/'); setIntendedPage(null); }} 
+            onSignIn={() => { setIsAuthenticated(true); navigate(intendedPage || '/dashboard'); setIntendedPage(null); }}
+            onGuest={() => { navigate(intendedPage === '/checkout' ? '/cart' : (intendedPage || '/')); setIntendedPage(null); }}
+          />
+        } />
+        
+        <Route path="/dashboard" element={
+          <UserDashboard 
+            onNavigate={handleNavigate} 
+            onLogout={() => { localStorage.removeItem('token'); setIsAuthenticated(false); navigate('/'); }}
+          />
+        } />
+        
+        <Route path="/category/:categoryId" element={<CategoryPageWrapper onNavigate={handleNavigate} />} />
+        <Route path="/category/:categoryId/:categoryName" element={<CategoryPageWrapper onNavigate={handleNavigate} />} />
+        
+        <Route path="/stores" element={<div style={{ marginTop: '20px' }}><OurStores /><GlobalBanner /><Features /><Footer onNavigate={handleNavigate} /></div>} />
+        <Route path="/blog" element={<div style={{ marginTop: '20px' }}><BlogPage /><GlobalBanner /><Footer onNavigate={handleNavigate} /></div>} />
+        <Route path="/product/detail" element={<><ProductDetailPage /><Footer onNavigate={handleNavigate} /></>} />
+        <Route path="/order-status" element={<div style={{ marginTop: '20px' }}><OrderStatus /><GlobalBanner /><StoreQuality /><Features /><Footer onNavigate={handleNavigate} /></div>} />
+        <Route path="/payment" element={<div style={{ marginTop: '20px' }}><Checkout onNavigate={handleNavigate} /><Footer onNavigate={handleNavigate} /></div>} />
+        <Route path="/order-success/:orderId" element={<><OrderSuccess /><Footer onNavigate={handleNavigate} /></>} />
+        <Route path="/exchange" element={<div style={{ marginTop: '20px' }}><Exchange /><GlobalBanner /><StoreQuality /><Features /><Footer onNavigate={handleNavigate} /></div>} />
+        <Route path="/shipping" element={<div style={{ marginTop: '20px' }}><Shipping /><GlobalBanner /><StoreQuality /><Features /><Footer onNavigate={handleNavigate} /></div>} />
+        <Route path="/cancellation" element={<div style={{ marginTop: '20px' }}><Cancellation /><GlobalBanner /><StoreQuality /><Features /><Footer onNavigate={handleNavigate} /></div>} />
+        <Route path="/contact" element={<div style={{ marginTop: '20px' }}><ContactUs /><GlobalBanner /><StoreQuality /><Features /><Footer onNavigate={handleNavigate} /></div>} />
+        <Route path="/privacy" element={<div style={{ marginTop: '20px' }}><Privacy /><GlobalBanner /><StoreQuality /><Features /><Footer onNavigate={handleNavigate} /></div>} />
+        <Route path="/terms" element={<div style={{ marginTop: '20px' }}><Terms /><GlobalBanner /><StoreQuality /><Features /><Footer onNavigate={handleNavigate} /></div>} />
+        <Route path="/about-us" element={<div style={{ marginTop: '20px' }}><AboutUs /><Footer onNavigate={handleNavigate} /></div>} />
+      </Routes>
       <FloatingButtons />
     </div>
   );
