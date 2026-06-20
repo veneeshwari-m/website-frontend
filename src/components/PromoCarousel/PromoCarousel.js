@@ -1,0 +1,95 @@
+import React, { useState, useEffect } from 'react';
+import './PromoCarousel.css';
+import { GraphQLClient, gql } from 'graphql-request';
+
+const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
+
+const GET_PRODUCTS = gql`
+  query GetProduct($search: String) {
+    getProduct(search: $search) {
+      id
+      name
+      price
+      images
+    }
+  }
+`;
+
+const PromoCarousel = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const client = new GraphQLClient(GRAPHQL_ENDPOINT);
+        const data = await client.request(GET_PRODUCTS, { search: '' });
+
+     
+        const fetchedProducts = data.getProduct ? data.getProduct.slice(0, 6) : [];
+        setProducts(fetchedProducts);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  return (
+    <section className="promo-carousel-section">
+      <div className="promo-header-bar">
+        <div className="marquee-container">
+          <div className="marquee-text">
+            <span>New Arrival Spotlight – Discover What Everyone's Loving Now 👀</span>
+            <span>New Arrival Spotlight – Discover What Everyone's Loving Now 👀</span>
+            <span>New Arrival Spotlight – Discover What Everyone's Loving Now 👀</span>
+            <span>New Arrival Spotlight – Discover What Everyone's Loving Now 👀</span>
+            <span>New Arrival Spotlight – Discover What Everyone's Loving Now 👀</span>
+            <span>New Arrival Spotlight – Discover What Everyone's Loving Now 👀</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="promo-container">
+        <div className="promo-grid">
+          {loading ? (
+            <p style={{ textAlign: 'center', width: '100%', padding: '20px' }}>Loading products...</p>
+          ) : products.length > 0 ? (
+            products.map((product) => (
+              <div className="promo-card" key={product.id}>
+                <div className="promo-image-wrapper">
+                  <img
+                    src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'}
+                    alt={product.name}
+                    className="promo-image"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/images/placeholder.png";
+                    }}
+                  />
+                </div>
+                <div className="promo-info">
+                  <p className="promo-desc" title={product.name}>{product.name}</p>
+                  <button className="promo-shop-btn">Shop Now</button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p style={{ textAlign: 'center', width: '100%', padding: '20px' }}>No promos found.</p>
+          )}
+        </div>
+        
+        <div className="promo-view-all-wrapper" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+          <button className="promo-view-all-btn" onClick={() => window.location.href = '/promos'}>
+            View All
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default PromoCarousel;

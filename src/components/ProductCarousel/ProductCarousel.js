@@ -1,0 +1,172 @@
+import React, { useState, useEffect, useRef } from 'react';
+import './ProductCarousel.css';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { GraphQLClient, gql } from 'graphql-request';
+
+const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
+
+const GET_PRODUCTS = gql`
+  query GetProduct($search: String) {
+    getProduct(search: $search) {
+      id
+      name
+      price
+      mrp
+      discountPercentage
+      images
+      brand
+      productCategoriesID
+      productCategoriesCode
+      variants {
+        color
+        size
+        stock
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const CarouselCard = ({ product }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const displayImage = product.images && product.images.length > 0
+    ? (isHovered && product.images.length > 1 ? product.images[1] : product.images[0])
+    : '/images/placeholder.png';
+
+  return (
+    <div
+      className="carousel-card"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="carousel-image-wrapper">
+        <div className="badge-new">New</div>
+        <img
+          src={displayImage}
+          alt={product.name}
+          className="carousel-image"
+        />
+      </div>
+      <div className="carousel-info">
+        <h3 className="carousel-name" title={product.name}>
+          {product.name}
+        </h3>
+        <div className="carousel-price">
+          Rs. {Number(product.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+        </div>
+        <button className="carousel-select-btn">Select Options</button>
+      </div>
+    </div>
+  );
+};
+
+const ProductCarousel = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const scrollContainerRef = useRef(null);
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = scrollContainerRef.current.clientWidth;
+      scrollContainerRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      if (scrollLeft + clientWidth >= scrollWidth - 10) {
+
+        scrollContainerRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        const scrollAmount = scrollContainerRef.current.clientWidth;
+        scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      }
+    }
+  };
+
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      scrollRight();
+    }, 7000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const client = new GraphQLClient(GRAPHQL_ENDPOINT);
+        const data = await client.request(GET_PRODUCTS, { search: '' });
+        const fetchedProducts = data.getProduct ? data.getProduct : [];
+        setProducts(fetchedProducts);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  return (
+    <>
+      <section className="product-carousel-section">
+        <div className="carousel-container">
+          <div className="carousel-header">
+            <h2 className="carousel-title">Exclusive Pattu Pavadai Collections</h2>
+          </div>
+
+          <div className="carousel-slider-wrapper">
+            {products.length > 5 && (
+              <button className="carousel-arrow left" onClick={scrollLeft}>
+                <FaChevronLeft />
+              </button>
+            )}
+
+            <div className="carousel-grid" ref={scrollContainerRef}>
+              {loading ? (
+                <p>Loading products...</p>
+              ) : products.length > 0 ? (
+                products.map((product) => (
+                  <CarouselCard key={product.id} product={product} />
+                ))
+              ) : (
+                <p>No products found.</p>
+              )}
+            </div>
+
+            {products.length > 5 && (
+              <button className="carousel-arrow right" onClick={scrollRight}>
+                <FaChevronRight />
+              </button>
+            )}
+          </div>
+
+          <div className="carousel-view-all-container">
+            <button className="carousel-view-all-btn" onClick={() => window.location.href = '/girls'}>
+              View All
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Girls Wear Banner Section (Second Image) */}
+      <section className="girls-wear-banner-section">
+        <img
+          src="/images/banner1.jpg"
+          alt="Girls Wear Trendy & Stylish"
+          className="girls-wear-banner-img"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "/images/banner1.png"; // temporary fallback so you can see it
+          }}
+        />
+      </section>
+    </>
+  );
+};
+
+export default ProductCarousel;

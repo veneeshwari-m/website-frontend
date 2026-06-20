@@ -1,0 +1,132 @@
+import React, { useState, useEffect, useRef } from 'react';
+import './ChettinadShowcase.css';
+import { GraphQLClient, gql } from 'graphql-request';
+
+const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
+
+const GET_PRODUCTS = gql`
+  query GetProduct($search: String) {
+    getProduct(search: $search) {
+      id
+      name
+      price
+      images
+    }
+  }
+`;
+
+const ChettinadShowcase = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollRef = useRef(null);
+
+  const handleDotClick = (index) => {
+    setActiveIndex(index);
+    if (scrollRef.current && scrollRef.current.children[index]) {
+      const child = scrollRef.current.children[index];
+      scrollRef.current.scrollTo({
+        left: child.offsetLeft,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const scrollLeft = scrollRef.current.scrollLeft;
+      const children = Array.from(scrollRef.current.children);
+      let closestIndex = 0;
+      let minDiff = Infinity;
+
+      children.forEach((child, index) => {
+        const diff = Math.abs(scrollLeft - child.offsetLeft);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestIndex = index;
+        }
+      });
+
+      if (closestIndex !== activeIndex) {
+        setActiveIndex(closestIndex);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const client = new GraphQLClient(GRAPHQL_ENDPOINT);
+        const data = await client.request(GET_PRODUCTS, { search: '' });
+        
+      
+        const fetchedProducts = data.getProduct ? data.getProduct.slice(0, 10) : [];
+        setProducts(fetchedProducts);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  return (
+    <section className="chettinad-section">
+      <div className="chettinad-container">
+        <h2 className="chettinad-title">Chettinad Cotton</h2>
+        
+        <div className="chettinad-grid" ref={scrollRef} onScroll={handleScroll}>
+          {loading ? (
+            <p style={{ textAlign: 'center', width: '100%', padding: '20px' }}>Loading products...</p>
+          ) : products.length > 0 ? (
+            products.map((product) => (
+              <div className="chettinad-card" key={product.id}>
+                <div className="chettinad-image-wrapper">
+                  <img 
+                    src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'} 
+                    alt={product.name} 
+                    className="chettinad-image"
+                    onError={(e) => {
+                      e.target.onerror = null; 
+                      e.target.src="/images/placeholder.png";
+                    }}
+                  />
+                </div>
+                <div className="chettinad-info">
+                  <h3 className="chettinad-name" title={product.name}>{product.name}</h3>
+                  <div className="chettinad-price">
+                    Rs. {Number(product.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  </div>
+                  <button className="chettinad-select-btn">Select Options</button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p style={{ textAlign: 'center', width: '100%', padding: '20px' }}>No products found.</p>
+          )}
+        </div>
+
+        <div className="chettinad-dots">
+          {!loading && products.map((_, index) => (
+            <span 
+              key={index} 
+              className={`dot ${index === activeIndex ? 'active' : ''}`}
+              onClick={() => handleDotClick(index)}
+              style={{ cursor: 'pointer' }}
+            ></span>
+          ))}
+        </div>
+
+        <div className="chettinad-view-all-wrapper">
+          <button className="chettinad-view-all-btn" onClick={() => window.location.href = '/chettinad'}>
+            View All
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default ChettinadShowcase;

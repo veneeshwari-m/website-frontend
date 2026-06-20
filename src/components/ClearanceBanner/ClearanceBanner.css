@@ -1,125 +1,150 @@
+.clearance-banner-container {
+  width: 100%;
+  padding: 0; /* Removed padding for full page cover */
+  margin: 40px 0;
+}
+
 .clearance-banner {
-  background-color: #fae8f0;
-  padding: 60px 10%;
+  background-color: #fbe6f0; /* Light pink background */
+  padding: 60px 8%;
+  border-radius: 12px; /* Light border radius */
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
   overflow: hidden;
-  margin: 40px auto;
-  max-width: 1600px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.clearance-banner::before {
-  content: '';
+.clearance-banner:hover {
+  transform: scale(1.02); /* Scale on hover */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover to enhance effect */
+}
+
+.circle {
   position: absolute;
-  top: 10%;
-  right: 5%;
+  border-radius: 50%;
+  background-color: #dcb3d5; /* Slightly darker pink circle */
+  opacity: 0.8;
+}
+
+.circle-top-right {
   width: 80px;
   height: 80px;
-  background-color: #dfb9d4;
-  border-radius: 50%;
-  opacity: 0.6;
+  top: -20px;
+  right: 20px;
 }
 
-.clearance-banner::after {
-  content: '';
-  position: absolute;
-  bottom: -30px;
-  left: 8%;
-  width: 120px;
-  height: 120px;
-  background-color: #dfb9d4;
-  border-radius: 50%;
-  opacity: 0.6;
+.circle-bottom-left {
+  width: 60px;
+  height: 60px;
+  bottom: 10px;
+  left: 20px;
 }
 
-.clearance-banner-blob {
-  position: absolute;
-  bottom: 25%;
-  left: 15%;
-  width: 90px;
-  height: 90px;
-  background-color: #dfb9d4;
-  border-radius: 50%;
-  opacity: 0.6;
+.circle-middle {
+  width: 150px;
+  height: 150px;
+  top: 50%;
+  left: 30%;
+  transform: translateY(-50%);
+  opacity: 0.3;
 }
 
 .clearance-content {
-  max-width: 600px;
-  z-index: 2;
   position: relative;
+  z-index: 2;
+  max-width: 60%;
 }
 
-.clearance-tag {
+.clearance-badge {
   display: inline-block;
-  background-color: #0F2D5C;
+  background-color: #8c2e88;
   color: white;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  padding: 8px 18px;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 6px 16px;
   border-radius: 20px;
-  margin-bottom: 25px;
-  text-transform: uppercase;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
 }
 
 .clearance-title {
-  font-family: Georgia, 'Times New Roman', Times, serif;
-  font-size: 40px;
-  color: #222;
-  margin: 0 0 5px 0;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 36px;
   font-weight: normal;
+  color: #333;
+  margin: 0 0 5px 0;
 }
 
 .clearance-discount {
-  font-family: Georgia, 'Times New Roman', Times, serif;
-  font-size: 52px;
-  color: #0F2D5C;
-  margin: 0 0 15px 0;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 56px;
   font-weight: bold;
+  color: #8c2e88; /* Purple */
+  margin: 0 0 15px 0;
+  letter-spacing: -1px;
 }
 
 .clearance-desc {
-  font-size: 15px;
+  font-size: 16px;
   color: #555;
-  margin: 0 0 35px 0;
+  margin-bottom: 30px;
+  font-family: sans-serif;
 }
 
-.clearance-btn {
-  background-color: #0F2D5C;
+.clearance-shop-btn {
+  background-color: #8c2e88;
   color: white;
   border: none;
-  padding: 14px 35px;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 30px;
+  padding: 12px 30px;
+  font-size: 16px;
+  border-radius: 25px; /* Pill shaped */
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  font-weight: bold;
   transition: background-color 0.2s;
 }
 
-.clearance-btn:hover {
-  background-color: #6b1e6e;
+.clearance-shop-btn:hover {
+  background-color: #6a1a66;
+}
+
+.arrow-icon {
+  font-size: 14px;
+}
+
+.clearance-image-wrapper {
+  position: relative;
+  z-index: 2;
+  width: 30%;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 20px;
 }
 
 .clearance-image {
-  z-index: 2;
-  position: relative;
-  margin-right: 10%;
+  max-width: 100%;
+  height: auto;
+  max-height: 250px;
+  object-fit: contain;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .clearance-banner {
     flex-direction: column;
+    padding: 30px 20px;
     text-align: center;
-    padding: 50px 20px;
   }
-  
-  .clearance-image {
-    margin-right: 0;
-    margin-top: 40px;
+  .clearance-content {
+    max-width: 100%;
+  }
+  .clearance-image-wrapper {
+    width: 100%;
+    justify-content: center;
+    margin-top: 30px;
+    padding-right: 0;
   }
 }
