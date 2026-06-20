@@ -18,7 +18,7 @@
 
 .clearance-banner:hover {
   transform: scale(1.02); /* Scale on hover */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover to enhance effect */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
 }
 
 .circle {
