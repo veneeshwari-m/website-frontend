@@ -25,7 +25,7 @@
   font-size: 16px;
   color: #333;
   margin-bottom: 40px;
-  font-family: sans-serif; /* Subtitle seems to be a sans-serif or simple serif */
+  font-family: sans-serif; 
 }
 
 .boys-grid {
@@ -101,8 +101,8 @@
 
 .boys-select-btn {
   background-color: white;
-  color: #8c2e88; /* Match the purple border in the image */
-  border: 1px solid #8c2e88; /* Purple border */
+  color: #0c2b5e; /* Match the purple border in the image */
+  border: 1px solid #0c2b5e; /* Purple border */
   padding: 10px 0;
   font-size: 14px;
   cursor: pointer;
@@ -113,7 +113,7 @@
 }
 
 .boys-select-btn:hover {
-  background-color: #8c2e88;
+  background-color: #0c2b5e;
   color: white;
 }
 

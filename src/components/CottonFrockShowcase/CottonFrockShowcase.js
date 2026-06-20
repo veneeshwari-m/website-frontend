@@ -48,7 +48,7 @@ const CottonFrockShowcase = () => {
   return (
     <section className="cotton-frock-section">
       <div className="cotton-frock-container">
-        <h2 className="cotton-frock-title">Cotton frock</h2>
+        <h2 className="cotton-frock-title">Cotton & Modern frock</h2>
         <p className="cotton-frock-subtitle">Breathable cotton frock made for summer comfort and everyday charm!</p>
         
         <div className="cotton-frock-grid">
@@ -71,7 +71,7 @@ const CottonFrockShowcase = () => {
                 <div className="cotton-frock-info">
                   <h3 className="cotton-frock-name" title={product.name}>{product.name}</h3>
                   <div className="cotton-frock-price">
-                    Rs. {Number(product.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    {Number(product.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </div>
                   <button className="cotton-frock-select-btn">Select Options</button>
                 </div>

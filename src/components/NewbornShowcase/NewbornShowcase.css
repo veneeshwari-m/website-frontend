@@ -74,7 +74,8 @@
 
 .newborn-price {
   font-size: 13px;
-  color: #1a365d; /* Dark blue price color */
+  color: #1a365d;
+  /* Dark blue price color */
   font-weight: bold;
 }
 
@@ -84,7 +85,8 @@
 }
 
 .newborn-view-all-btn {
-  background-color: #0c2b5e; /* Very dark blue from screenshot */
+  background-color: #0c2b5e;
+  /* Very dark blue from screenshot */
   color: white;
   border: none;
   padding: 12px 40px;
@@ -110,6 +112,7 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
   }
+
   .newborn-title {
     font-size: 26px;
   }

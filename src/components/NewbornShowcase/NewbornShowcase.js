@@ -48,10 +48,10 @@ const NewbornShowcase = () => {
             products.map((product) => (
               <div className="newborn-card" key={product.id}>
                 <div className="newborn-image-wrapper">
-                  <img 
-                    src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'} 
-                    alt={product.name} 
-                    className="newborn-image" 
+                  <img
+                    src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'}
+                    alt={product.name}
+                    className="newborn-image"
                   />
                 </div>
                 <div className="newborn-info">
