@@ -92,8 +92,8 @@
 
 .chettinad-select-btn {
   background-color: white;
-  color: #8c2e88; /* Purple */
-  border: 1px solid #8c2e88;
+  color: #0c2b5e; /* Purple */
+  border: 1px solid #0c2b5e;
   padding: 10px 0;
   font-size: 14px;
   cursor: pointer;
@@ -104,7 +104,7 @@
 }
 
 .chettinad-select-btn:hover {
-  background-color: #8c2e88;
+  background-color: #0c2b5e;
   color: white;
 }
 
