@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ProductShowcase.css';
 import { GraphQLClient, gql } from 'graphql-request';
+import QuickViewModal from '../QuickViewModal/QuickViewModal';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
@@ -21,6 +22,15 @@ const GET_PRODUCTS = gql`
         size
         stock
       }
+      description
+      material
+      embellishment
+      neck
+      sleeves
+      closure
+      lining
+      washCare
+      ironCare
       createdAt
       updatedAt
     }
@@ -30,6 +40,7 @@ const GET_PRODUCTS = gql`
 const ProductShowcase = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -48,6 +59,14 @@ const ProductShowcase = () => {
 
     fetchProducts();
   }, []);
+
+  const openQuickView = (product) => {
+    setSelectedProduct({
+      ...product,
+      image: product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png',
+      originalPrice: product.mrp
+    });
+  };
 
   return (
     <section className="product-showcase-section">
@@ -76,7 +95,7 @@ const ProductShowcase = () => {
                 <div className="product-price">
                   {Number(product.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </div>
-                <button className="select-options-btn">Select Options</button>
+                <button className="select-options-btn" onClick={() => openQuickView(product)}>Select Options</button>
               </div>
             </div>
           ))
@@ -90,6 +109,8 @@ const ProductShowcase = () => {
           View All
         </button>
       </div>
+      
+      {selectedProduct && <QuickViewModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
     </section>
   );
 };

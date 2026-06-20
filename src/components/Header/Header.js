@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import './Header.css';
 import { FiSearch, FiUser, FiShoppingBag } from 'react-icons/fi';
-import { MdKeyboardArrowDown } from 'react-icons/md';
+import './Header.css';
 import { GraphQLClient, gql } from 'graphql-request';
+import { useCart } from '../../context/CartContext';
+import { MdKeyboardArrowDown } from 'react-icons/md';
+import { useNavigate, Link } from 'react-router-dom';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
@@ -33,6 +35,9 @@ const GET_PRODUCT_CATEGORIES = gql`
 
 const Header = () => {
   const [categories, setCategories] = useState([]);
+  const { getCartCount } = useCart();
+  const cartCount = getCartCount();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -63,26 +68,26 @@ const Header = () => {
         <nav className="header-nav">
           <ul className="nav-list">
             <li className="nav-item">
-              <a href="/">Home</a>
+              <Link to="/">Home</Link>
             </li>
             {categories.map((category) => (
               <li className="nav-item" key={category.id}>
-                <a href={`/categories/${category.code}`}>
+                <Link to={`/categories/${category.code}`}>
                   {category.name}
                   {category.subCategories && category.subCategories.length > 0 && (
                     <MdKeyboardArrowDown className="nav-arrow" />
                   )}
-                </a>
+                </Link>
               </li>
             ))}
             <li className="nav-item">
-              <a href="/clearance">Clearance Sale Live Now!</a>
+              <Link to="/clearance">Clearance Sale Live Now!</Link>
             </li>
             <li className="nav-item">
-              <a href="/stores">Our Stores</a>
+              <Link to="/stores">Our Stores</Link>
             </li>
             <li className="nav-item">
-              <a href="/blog">Blog</a>
+              <Link to="/blog">Blog</Link>
             </li>
           </ul>
         </nav>
@@ -92,12 +97,19 @@ const Header = () => {
           <button className="icon-btn" aria-label="Search">
             <FiSearch />
           </button>
-          <button className="icon-btn" aria-label="User Profile">
+          <button className="icon-btn" aria-label="User Profile" onClick={() => {
+            const token = localStorage.getItem('token');
+            if (token) {
+              navigate('/profile');
+            } else {
+              navigate('/login');
+            }
+          }}>
             <FiUser />
           </button>
-          <button className="icon-btn cart-btn" aria-label="Shopping Cart">
-            <FiShoppingBag />
-            <span className="cart-badge">4</span>
+          <button className="icon-btn cart-btn" aria-label="Shopping Cart" onClick={() => navigate('/cart')}>
+            <FiShoppingBag className="header-icon" />
+            <span className="cart-badge">{cartCount}</span>
           </button>
         </div>
       </div>

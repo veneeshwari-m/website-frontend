@@ -33,7 +33,6 @@
   flex-grow: 1;
   display: flex;
   justify-content: center;
-  margin-left: 28%;
 }
 
 .nav-list {
@@ -56,7 +55,7 @@
 }
 
 .nav-item a:hover {
-  color: #8a2b8f; /* Purple hover to match theme */
+  color: #0F2D5C; /* Purple hover to match theme */
 }
 
 .nav-arrow {
@@ -87,7 +86,7 @@
 }
 
 .icon-btn:hover {
-  color: #8a2b8f;
+  color: #0F2D5C;
 }
 
 .cart-btn {
@@ -98,7 +97,7 @@
   position: absolute;
   top: -6px;
   right: -8px;
-  background-color: #8a2b8f;
+  background-color: #0F2D5C;
   color: white;
   font-size: 10px;
   font-weight: bold;
