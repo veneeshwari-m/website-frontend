@@ -1,0 +1,132 @@
+.jabla-section {
+  /* width: 100%; */
+  padding: 60px 0;
+  /* background-color: #ffffff; White background */
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.jabla-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.jabla-title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 15px;
+}
+
+.jabla-subtitle {
+  text-align: center;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 40px;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.jabla-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 20px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.jabla-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.jabla-card {
+  flex: 1;
+  min-width: 200px;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+.jabla-image-wrapper {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  background-color: #f0f0f0;
+}
+
+.jabla-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.jabla-card:hover .jabla-image {
+  transform: scale(1.05);
+}
+
+.jabla-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  flex-grow: 1;
+}
+
+.jabla-name {
+  font-size: 14px;
+  color: #000;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+  font-weight: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.jabla-price {
+  font-size: 13px;
+  color: #000;
+  margin-bottom: 20px;
+}
+
+.jabla-select-btn {
+  background-color: white;
+  color: #1a365d;
+  border: 1px solid #666;
+  padding: 10px 0;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Times New Roman', Times, serif;
+  width: 100%;
+  text-align: center;
+}
+
+.jabla-select-btn:hover {
+  background-color: #1a365d;
+  color: white;
+  border-color: #1a365d;
+}
+
+.jabla-view-all-btn {
+  background-color: #071938; /* Match Chettinad/Boys purple View All button */
+  color: white;
+  border: none;
+  padding: 12px 40px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+.jabla-view-all-btn:hover {
+  background-color: #071938;
+}

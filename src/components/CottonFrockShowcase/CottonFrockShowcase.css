@@ -1,0 +1,140 @@
+.cotton-frock-section {
+  width: 100%;
+  padding: 60px 0;
+  background-color: #fcfaf8; /* Cream background like in the screenshot */
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.cotton-frock-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.cotton-frock-title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: normal;
+  color: #000;
+  margin-bottom: 15px;
+}
+
+.cotton-frock-subtitle {
+  text-align: center;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 40px;
+  font-family: sans-serif;
+}
+
+.cotton-frock-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 30px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.cotton-frock-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.cotton-frock-card {
+  flex: 1;
+  min-width: 200px;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+.cotton-frock-image-wrapper {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cotton-frock-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.cotton-frock-card:hover .cotton-frock-image {
+  transform: scale(1.05);
+}
+
+.cotton-frock-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  flex-grow: 1;
+}
+
+.cotton-frock-name {
+  font-size: 14px;
+  color: #333;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+  font-weight: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cotton-frock-price {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.cotton-frock-select-btn {
+  background-color: white;
+  color: #8c2e88;
+  border: 1px solid #8c2e88;
+  padding: 10px 0;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Times New Roman', Times, serif;
+  width: 100%;
+  text-align: center;
+}
+
+.cotton-frock-select-btn:hover {
+  background-color: #8c2e88;
+  color: white;
+}
+
+.cotton-frock-view-all-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.cotton-frock-view-all-btn {
+  background-color: #071938; /* Match the dark blue View All buttons */
+  color: white;
+  border: none;
+  padding: 12px 40px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+.cotton-frock-view-all-btn:hover {
+  background-color: #0c2b5e;
+}

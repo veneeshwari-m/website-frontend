@@ -1,0 +1,164 @@
+.chettinad-section {
+
+  padding: 40px 0 60px 0;
+  
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.chettinad-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.chettinad-title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: normal;
+  color: #000;
+  margin-bottom: 30px;
+}
+
+.chettinad-grid {
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 20px;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.chettinad-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.chettinad-card {
+  flex: 1;
+  min-width: 220px;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+.chettinad-image-wrapper {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  background-color: #f0f0f0;
+}
+
+.chettinad-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.chettinad-card:hover .chettinad-image {
+  transform: scale(1.05);
+}
+
+.chettinad-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  flex-grow: 1;
+}
+
+.chettinad-name {
+  font-size: 15px;
+  color: #333;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+  font-weight: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.chettinad-price {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.chettinad-select-btn {
+  background-color: white;
+  color: #8c2e88; /* Purple */
+  border: 1px solid #8c2e88;
+  padding: 10px 0;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Times New Roman', Times, serif;
+  width: 100%;
+  text-align: center;
+}
+
+.chettinad-select-btn:hover {
+  background-color: #8c2e88;
+  color: white;
+}
+
+.chettinad-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  margin-bottom: 40px;
+}
+
+.chettinad-dots .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #999;
+}
+
+.chettinad-dots .dot.active {
+  width: 6px;
+  height: 6px;
+  background-color: #333;
+  position: relative;
+}
+
+.chettinad-dots .dot.active::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border: 1px solid #333;
+  border-radius: 50%;
+}
+
+.chettinad-view-all-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.chettinad-view-all-btn {
+  background-color: #0c2b5e;
+  color: white;
+  border: none;
+  padding: 12px 40px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+.chettinad-view-all-btn:hover {
+  background-color: #0c2b5e;
+}

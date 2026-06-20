@@ -1,0 +1,172 @@
+.promo-carousel-section {
+  width: 100%;
+  position: relative;
+  padding-bottom: 60px;
+  background-color: #f8f8f8;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.promo-header-bar {
+  width: 100%;
+  height: 50px;
+  background-color: #0c2b5e;
+  /* Dark blue matching the buttons */
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee-text {
+  display: inline-block;
+  animation: marquee 25s linear infinite;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.marquee-text span {
+  margin-right: 50px;
+  /* Space between repeated phrases */
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.promo-container {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.promo-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  overflow-x: auto;
+  padding: 0 0 20px 0;
+  /* Top padding 0 to remove gap between header and cards */
+  /* Hide scrollbar for clean look */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.promo-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.promo-card {
+  flex: 1;
+  min-width: 220px;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ddd;
+}
+
+.promo-image-wrapper {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  /* Portrait ratio for posters */
+  overflow: hidden;
+  border-bottom: 1px solid #eee;
+}
+
+.promo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.promo-info {
+  padding: 15px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+.promo-desc {
+  font-size: 11px;
+  color: #333;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+  font-family: sans-serif;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.promo-shop-btn {
+  background-color: #0c2b5e;
+  /* Dark blue matching the View All button */
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  font-size: 13px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: sans-serif;
+  width: 80%;
+  font-weight: bold;
+}
+
+.promo-shop-btn:hover {
+  background-color: #071938;
+  /* Darker blue on hover */
+}
+
+@media (max-width: 1200px) {
+  .promo-grid {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 992px) {
+  .promo-card {
+    min-width: 200px;
+  }
+}
+
+.promo-view-all-btn {
+  background-color: #0c2b5e;
+  color: white;
+  border: none;
+  padding: 12px 40px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+.promo-view-all-btn:hover {
+  background-color: #071938;
+}
+
+@media (max-width: 768px) {
+  .promo-card {
+    min-width: 250px;
+    /* Slightly larger on mobile for horizontal scroll */
+  }
+}

@@ -1,0 +1,88 @@
+import React, { useState, useEffect } from 'react';
+import './JablaShowcase.css';
+import { GraphQLClient, gql } from 'graphql-request';
+
+const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
+
+const GET_PRODUCTS = gql`
+  query GetProduct($search: String) {
+    getProduct(search: $search) {
+      id
+      name
+      price
+      images
+    }
+  }
+`;
+
+const JablaShowcase = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const client = new GraphQLClient(GRAPHQL_ENDPOINT);
+        const data = await client.request(GET_PRODUCTS, { search: '' });
+        
+    
+        const fetchedProducts = data.getProduct ? data.getProduct.slice(0, 5) : [];
+        setProducts(fetchedProducts);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  return (
+    <section className="jabla-section">
+      <div className="jabla-container">
+        <h2 className="jabla-title">Jabla, Co-od & Frock</h2>
+        <p className="jabla-subtitle">Breathable cotton frock made for summer comfort and everyday charm!</p>
+        
+        <div className="jabla-grid">
+          {loading ? (
+            <p style={{ textAlign: 'center', width: '100%', padding: '20px' }}>Loading products...</p>
+          ) : products.length > 0 ? (
+            products.map((product) => (
+              <div className="jabla-card" key={product.id}>
+                <div className="jabla-image-wrapper">
+                  <img 
+                    src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'} 
+                    alt={product.name} 
+                    className="jabla-image"
+                    onError={(e) => {
+                      e.target.onerror = null; 
+                      e.target.src="/images/placeholder.png";
+                    }}
+                  />
+                </div>
+                <div className="jabla-info">
+                  <h3 className="jabla-name" title={product.name}>{product.name}</h3>
+                  <div className="jabla-price">
+                    {Number(product.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  </div>
+                  <button className="jabla-select-btn">Select Options</button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p style={{ textAlign: 'center', width: '100%', padding: '20px' }}>No products found.</p>
+          )}
+        </div>
+
+        <div className="jabla-view-all-wrapper" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+          <button className="jabla-view-all-btn" onClick={() => window.location.href = '/jabla'}>
+            View All
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default JablaShowcase;
