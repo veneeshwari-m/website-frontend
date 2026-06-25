@@ -3,7 +3,9 @@
   width: 100%;
   border-bottom: 1px solid #eee;
   font-family: 'Times New Roman', Times, serif;
-  
+  position: sticky;
+  top: 52px;
+  z-index: 1000;
 }
 
 .header-container {
@@ -52,10 +54,32 @@
   align-items: center;
   transition: color 0.3s;
   white-space: nowrap;
+  position: relative;
 }
 
-.nav-item a:hover {
+.nav-item a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -6px;
+  left: 0;
+  background-color: #0F2D5C;
+  transition: width 0.5s ease-in-out;
+}
+
+.nav-item a:hover::after,
+.nav-item a.active::after {
+  width: 100%;
+}
+
+.nav-item a:hover,
+.nav-item a.active {
   color: #0F2D5C; /* Purple hover to match theme */
+}
+
+.nav-item a.active {
+  font-weight: 700;
 }
 
 .nav-arrow {
