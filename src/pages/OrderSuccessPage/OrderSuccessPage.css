@@ -123,25 +123,25 @@
   width: 100%;
 }
 
-.primary-btn {
+.success-primary-btn {
   background-color: #0F2D5C;
   color: white;
-  border: none;
+  border: 1px solid #0F2D5C;
 }
 
-.primary-btn:hover {
+.success-primary-btn:hover {
   background-color: #0F2D5C;
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(138, 43, 143, 0.3);
 }
 
-.secondary-btn {
+.success-secondary-btn {
   background-color: white;
   color: #333;
   border: 1px solid #ddd;
 }
 
-.secondary-btn:hover {
+.success-secondary-btn:hover {
   background-color: #f5f5f5;
   border-color: #ccc;
 }
