@@ -99,7 +99,7 @@ const Header = () => {
           <button className="icon-btn" aria-label="User Profile" onClick={() => {
             const token = localStorage.getItem('token');
             if (token) {
-              navigate('/profile');
+              navigate('/profile', { state: { activeTab: 'profile' } });
             } else {
               navigate('/login');
             }
