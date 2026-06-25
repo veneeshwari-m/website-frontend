@@ -436,3 +436,91 @@
     padding: 25px 20px;
   }
 }
+
+/* Saved Addresses List */
+.saved-addresses-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.address-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 15px;
+  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #fff;
+}
+
+.address-option:hover {
+  border-color: #ccc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.address-option.selected {
+  border-color: #1a365d;
+  background: rgba(138, 43, 143, 0.03);
+  box-shadow: 0 0 0 1px #1a365d;
+}
+
+.address-option input[type="radio"] {
+  margin-top: 4px;
+  accent-color: #1a365d;
+  width: 18px;
+  height: 18px;
+}
+
+.address-details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.address-type {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.85rem;
+  background: #eee;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  text-transform: uppercase;
+}
+
+.address-option.selected .address-type {
+  background: rgba(138, 43, 143, 0.1);
+  color: #1a365d;
+}
+
+.address-name {
+  font-weight: 600;
+  color: #222;
+  font-size: 15px;
+}
+
+.address-phone {
+  font-size: 14px;
+  color: #555;
+  margin-left: auto;
+}
+
+.address-street {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.new-address-form {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px dashed #ccc;
+  margin-bottom: 25px;
+}

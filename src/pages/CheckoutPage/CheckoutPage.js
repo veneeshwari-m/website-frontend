@@ -7,20 +7,16 @@ import { useCart } from "../../context/CartContext";
 const GRAPHQL_ENDPOINT =
   process.env.REACT_APP_GRAPHQL_ENDPOINT || "http://localhost:2000/graphql";
 
-const GET_CART = gql`
-  query GetCartByUserId($userId: ID!) {
-    getCartByUserId(userId: $userId) {
-      id
-      totalQuantity
-      subTotal
-      products {
-        productId
-        productName
-        productImage
-        quantity
-        price
-        totalPrice
-      }
+const GET_USER_ADDRESSES = gql`
+  query GetUserAddresses {
+    getUserAddresses {
+      addressType
+      name
+      street
+      city
+      state
+      country
+      phone
     }
   }
 `;
@@ -66,7 +62,7 @@ const Checkout = ({ onNavigate }) => {
   const navigate = useNavigate();
   const { cartItems, getCartTotal, removeFromCart } = useCart();
 
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [formData, setFormData] = useState({
     addressType: "Home",
@@ -81,13 +77,56 @@ const Checkout = ({ onNavigate }) => {
     notes: "",
   });
 
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [selectedAddressIndex, setSelectedAddressIndex] = useState('new');
+  const [loadingAddresses, setLoadingAddresses] = useState(true);
+
   // We no longer fetch from backend because we use CartContext
   useEffect(() => {
     window.scrollTo(0, 0);
+    fetchSavedAddresses();
   }, []);
+
+  const fetchSavedAddresses = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setLoadingAddresses(false);
+        return;
+      }
+      const client = new GraphQLClient(GRAPHQL_ENDPOINT, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await client.request(GET_USER_ADDRESSES);
+      if (data.getUserAddresses && data.getUserAddresses.length > 0) {
+        setSavedAddresses(data.getUserAddresses);
+        setSelectedAddressIndex(0);
+      }
+    } catch (err) {
+      console.error("Error fetching addresses:", err);
+    } finally {
+      setLoadingAddresses(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    if (name === 'phone') {
+      // Only allow numbers for phone
+      const sanitized = value.replace(/[^0-9]/g, '');
+      if (sanitized.length > 10) return;
+      setFormData((prev) => ({ ...prev, [name]: sanitized }));
+      return;
+    }
+    
+    if (name === 'name' || name === 'city' || name === 'state') {
+      // Only allow alphabets and spaces for text fields
+      const sanitized = value.replace(/[^a-zA-Z\s]/g, '');
+      setFormData((prev) => ({ ...prev, [name]: sanitized }));
+      return;
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -99,18 +138,30 @@ const Checkout = ({ onNavigate }) => {
     try {
       const token = localStorage.getItem("token");
 
+      const deliveryAddress = selectedAddressIndex === 'new'
+        ? {
+            addressType: formData.addressType,
+            name: formData.name,
+            street: formData.street,
+            city: formData.city,
+            state: formData.state,
+            country: formData.country,
+            phone: formData.phone,
+          }
+        : {
+            addressType: savedAddresses[selectedAddressIndex].addressType,
+            name: savedAddresses[selectedAddressIndex].name,
+            street: savedAddresses[selectedAddressIndex].street,
+            city: savedAddresses[selectedAddressIndex].city,
+            state: savedAddresses[selectedAddressIndex].state,
+            country: savedAddresses[selectedAddressIndex].country,
+            phone: savedAddresses[selectedAddressIndex].phone,
+          };
+
       const input = {
         deliveryCharge: formData.deliveryCharge,
         paymentMethod: formData.paymentMethod,
-        deliveryAddress: {
-          addressType: formData.addressType,
-          name: formData.name,
-          street: formData.street,
-          city: formData.city,
-          state: formData.state,
-          country: formData.country,
-          phone: formData.phone,
-        },
+        deliveryAddress,
         notes: formData.notes || undefined,
       };
 
@@ -219,8 +270,51 @@ const Checkout = ({ onNavigate }) => {
         <div className="checkout-form-section">
           <h2 className="checkout-section-title">Delivery Address</h2>
 
-          <div className="form-row">
-            <div className="form-group">
+          {loadingAddresses ? (
+            <div style={{ padding: "20px 0", color: "#666" }}>Loading addresses...</div>
+          ) : savedAddresses.length > 0 ? (
+            <div className="saved-addresses-container">
+              {savedAddresses.map((addr, index) => (
+                <label key={index} className={`address-option ${selectedAddressIndex === index ? 'selected' : ''}`}>
+                  <input
+                    type="radio"
+                    name="addressSelection"
+                    value={index}
+                    checked={selectedAddressIndex === index}
+                    onChange={() => setSelectedAddressIndex(index)}
+                  />
+                  <div className="address-details">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '5px' }}>
+                      <span className="address-type">{addr.addressType}</span>
+                      <span className="address-name">{addr.name}</span>
+                      <span className="address-phone">{addr.phone}</span>
+                    </div>
+                    <span className="address-street">
+                      {addr.street}, {addr.city}, {addr.state}, {addr.country}
+                    </span>
+                  </div>
+                </label>
+              ))}
+
+              <label className={`address-option ${selectedAddressIndex === 'new' ? 'selected' : ''}`}>
+                <input
+                  type="radio"
+                  name="addressSelection"
+                  value="new"
+                  checked={selectedAddressIndex === 'new'}
+                  onChange={() => setSelectedAddressIndex('new')}
+                />
+                <div className="address-details">
+                  <span className="address-type" style={{ background: 'transparent', padding: 0, fontWeight: 'bold' }}>+ Add New Address</span>
+                </div>
+              </label>
+            </div>
+          ) : null}
+
+          {selectedAddressIndex === 'new' && (
+            <div className="new-address-form">
+              <div className="form-row">
+                <div className="form-group">
               <label>Full Name *</label>
               <input
                 type="text"
@@ -238,7 +332,11 @@ const Checkout = ({ onNavigate }) => {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="Enter phone number"
+                placeholder="Enter 10 digit phone number"
+                minLength="10"
+                maxLength="10"
+                pattern="[0-9]{10}"
+                title="Please enter a valid 10-digit phone number"
                 required
               />
             </div>
@@ -307,6 +405,9 @@ const Checkout = ({ onNavigate }) => {
               </select>
             </div>
           </div>
+
+            </div>
+          )}
 
           <div className="form-group">
             <label>Order Notes (Optional)</label>

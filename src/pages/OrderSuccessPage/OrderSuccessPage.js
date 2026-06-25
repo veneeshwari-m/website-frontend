@@ -72,7 +72,7 @@ const OrderSuccessPage = () => {
   return (
     <div className="order-success-container">
       <div className="order-success-card">
-        
+
         {!isDetailsMode && (
           <>
             <div className="success-icon-wrapper">
@@ -124,7 +124,7 @@ const OrderSuccessPage = () => {
                   </div>
                 ))}
               </div>
-              
+
               <div className="premium-summary-totals">
                 <div className="premium-total-row">
                   <span>Subtotal</span>
@@ -155,12 +155,12 @@ const OrderSuccessPage = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="premium-shipping-card">
                 <h3 className="dashboard-section-title">Payment Method</h3>
                 <div className="payment-method-content">
-                   <div className="payment-badge">{orderDetails.paymentMethod === 'COD' ? 'Cash on Delivery' : orderDetails.paymentMethod}</div>
-                   <p className="payment-status">Status: <strong>{orderDetails.status}</strong></p>
+                  <div className="payment-badge">{orderDetails.paymentMethod === 'COD' ? 'Cash on Delivery' : orderDetails.paymentMethod}</div>
+                  <p className="payment-status">Status: <strong>{orderDetails.status}</strong></p>
                 </div>
               </div>
             </div>

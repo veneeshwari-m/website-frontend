@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './NewbornShowcase.css';
 import { GraphQLClient, gql } from 'graphql-request';
+import { useNavigate } from 'react-router-dom';
+import QuickViewModal from '../QuickViewModal/QuickViewModal';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
@@ -18,6 +20,9 @@ const GET_PRODUCTS = gql`
 const NewbornShowcase = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const openQuickView = (product) => { setSelectedProduct(product); };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -47,7 +52,7 @@ const NewbornShowcase = () => {
           ) : products.length > 0 ? (
             products.map((product) => (
               <div className="newborn-card" key={product.id}>
-                <div className="newborn-image-wrapper">
+                <div className="newborn-image-wrapper" style={{ cursor: 'pointer' }} onClick={() => navigate(`/product/${product.id}`)}>
                   <img
                     src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'}
                     alt={product.name}
@@ -61,6 +66,7 @@ const NewbornShowcase = () => {
                   <div className="newborn-price">
                     Rs. {Number(product.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </div>
+                 
                 </div>
               </div>
             ))
@@ -70,10 +76,11 @@ const NewbornShowcase = () => {
         </div>
 
         <div className="newborn-view-all-container">
-          <button className="newborn-view-all-btn" onClick={() => window.location.href = '/newborn'}>
+          <button className="newborn-view-all-btn" onClick={() => navigate('/categories/NEWBORN')}>
             View All
           </button>
         </div>
+        {selectedProduct && <QuickViewModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
       </div>
     </section>
   );

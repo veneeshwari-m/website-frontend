@@ -1,7 +1,5 @@
 .cotton-frock-section {
   width: 100%;
-  padding: 60px 0;
-
   font-family: 'Times New Roman', Times, serif;
 }
 
@@ -16,14 +14,14 @@
   text-align: center;
   font-size: 26px;
   font-weight: bold;
-  color: #000;
+  color: #1a365d;
   margin-bottom: 15px;
 }
 
 .cotton-frock-subtitle {
   text-align: center;
   font-size: 16px;
-  color: #333;
+  color: #1a365d;
   margin-bottom: 40px;
   font-family: sans-serif;
 }
@@ -83,7 +81,7 @@
 
 .cotton-frock-name {
   font-size: 14px;
-  color: #333;
+  color: #1a365d;
   margin: 0 0 10px 0;
   line-height: 1.4;
   font-weight: normal;
@@ -95,14 +93,14 @@
 
 .cotton-frock-price {
   font-size: 13px;
-  color: #000;
+  color: #1a365d;
   margin-bottom: 20px;
 }
 
 .cotton-frock-select-btn {
-  background-color: white;
+  background-color: transparent;
   color: #1a365d;
-  border: 1px solid #666;
+  border: 1px solid #1a365d;
   padding: 10px 0;
   font-size: 14px;
   cursor: pointer;
@@ -126,7 +124,7 @@
 }
 
 .cotton-frock-view-all-btn {
-  background-color: #071938; /* Match the dark blue View All buttons */
+  background-color: #1a365d;
   color: white;
   border: none;
   padding: 12px 40px;
@@ -138,5 +136,5 @@
 }
 
 .cotton-frock-view-all-btn:hover {
-  background-color: #0c2b5e;
+  background-color: #1a365d;
 }

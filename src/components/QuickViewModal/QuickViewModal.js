@@ -38,7 +38,7 @@ const QuickViewModal = ({ product, onClose }) => {
         
         <div className="quickview-content">
           <div className="quickview-image-container">
-            <img src={product.image || product.img} alt={product.name || product.title} className="quickview-image" />
+            <img src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'} alt={product.name || product.title} className="quickview-image" />
           </div>
 
           <div className="quickview-details">

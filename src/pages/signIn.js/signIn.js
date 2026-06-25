@@ -94,11 +94,19 @@ const SignIn = ({ onBack, onSignIn, onGuest }) => {
       const user = isRegisterMode ? data?.registerUser?.user : data?.loginUser?.user;
 
       if (token) {
-        localStorage.setItem('token', token);
-        if (user) {
-          localStorage.setItem('user', JSON.stringify(user));
+        if (isRegisterMode) {
+          // Registration successful: switch to login mode and pre-fill email
+          alert("Registration successful! Please login.");
+          setIsRegisterMode(false);
+          setFormData(prev => ({ ...prev, password: '' }));
+        } else {
+          // Login successful: save token and navigate
+          localStorage.setItem('token', token);
+          if (user) {
+            localStorage.setItem('user', JSON.stringify(user));
+          }
+          onSignIn();
         }
-        onSignIn();
       } else {
         setError(new Error(isRegisterMode ? "Registration failed. No token received." : "Login failed. No token received."));
       }
@@ -130,7 +138,7 @@ const SignIn = ({ onBack, onSignIn, onGuest }) => {
         <button className="back-btn" onClick={onBack}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
         </button>
-        <img src="/images/logo.png" alt="Logo" className="signin-logo" onClick={onBack} />
+        <img src="/images/log1.png" alt="Logo" className="signin-logo" onClick={onBack} />
       </div>
 
       <div className="signin-container" style={{ padding: isRegisterMode ? '20px 0' : '0' }}>
@@ -242,7 +250,7 @@ const SignIn = ({ onBack, onSignIn, onGuest }) => {
             {loading ? (isRegisterMode ? 'Registering...' : 'Signing in...') : (isRegisterMode ? 'Register' : 'Sign In')}
           </button>
 
-          <button className="guest-btn" onClick={onGuest} disabled={loading}>Continue as guest</button>
+          {/* <button className="guest-btn" onClick={onGuest} disabled={loading}>Continue as guest</button> */}
 
           <p style={{ textAlign: 'center', marginTop: '15px', fontSize: '14px', color: '#666' }}>
             {isRegisterMode ? "Already have an account? " : "Don't have an account? "}
@@ -257,7 +265,7 @@ const SignIn = ({ onBack, onSignIn, onGuest }) => {
             </span>
           </p>
 
-          {!isRegisterMode && (
+          {/* {!isRegisterMode && (
             <label className="checkbox-wrapper" style={{ marginTop: '20px' }}>
               <input type="checkbox" defaultChecked />
               <span className="checkmark">
@@ -265,17 +273,17 @@ const SignIn = ({ onBack, onSignIn, onGuest }) => {
               </span>
               Email me with news and offers
             </label>
-          )}
+          )} */}
 
-          <p className="terms" style={{ marginTop: '20px' }}>
+          {/* <p className="terms" style={{ marginTop: '20px' }}>
             By continuing, you agree to our <a href="/terms">Terms of service</a>
-          </p>
+          </p> */}
         </div>
       </div>
 
-      <div className="signin-footer">
+      {/* <div className="signin-footer">
         <a href="/privacy">Privacy policy</a>
-      </div>
+      </div> */}
     </div>
   );
 };

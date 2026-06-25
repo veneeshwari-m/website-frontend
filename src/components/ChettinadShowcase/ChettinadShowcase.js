@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './ChettinadShowcase.css';
 import { GraphQLClient, gql } from 'graphql-request';
+import { useNavigate } from 'react-router-dom';
+import QuickViewModal from '../QuickViewModal/QuickViewModal';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
@@ -20,6 +22,9 @@ const ChettinadShowcase = () => {
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef(null);
+  const navigate = useNavigate();
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const openQuickView = (product) => { setSelectedProduct(product); };
 
   const handleDotClick = (index) => {
     setActiveIndex(index);
@@ -58,8 +63,8 @@ const ChettinadShowcase = () => {
       try {
         const client = new GraphQLClient(GRAPHQL_ENDPOINT);
         const data = await client.request(GET_PRODUCTS, { search: '' });
-        
-      
+
+
         const fetchedProducts = data.getProduct ? data.getProduct.slice(0, 10) : [];
         setProducts(fetchedProducts);
       } catch (err) {
@@ -76,21 +81,21 @@ const ChettinadShowcase = () => {
     <section className="chettinad-section">
       <div className="chettinad-container">
         <h2 className="chettinad-title">Chettinad Cotton</h2>
-        
+
         <div className="chettinad-grid" ref={scrollRef} onScroll={handleScroll}>
           {loading ? (
             <p style={{ textAlign: 'center', width: '100%', padding: '20px' }}>Loading products...</p>
           ) : products.length > 0 ? (
             products.map((product) => (
               <div className="chettinad-card" key={product.id}>
-                <div className="chettinad-image-wrapper">
-                  <img 
-                    src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'} 
-                    alt={product.name} 
+                <div className="chettinad-image-wrapper" style={{ cursor: 'pointer' }} onClick={() => navigate(`/product/${product.id}`)}>
+                  <img
+                    src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'}
+                    alt={product.name}
                     className="chettinad-image"
                     onError={(e) => {
-                      e.target.onerror = null; 
-                      e.target.src="/images/placeholder.png";
+                      e.target.onerror = null;
+                      e.target.src = "/images/placeholder.png";
                     }}
                   />
                 </div>
@@ -99,7 +104,7 @@ const ChettinadShowcase = () => {
                   <div className="chettinad-price">
                     Rs. {Number(product.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </div>
-                  <button className="chettinad-select-btn">Select Options</button>
+                  <button className="chettinad-select-btn" onClick={() => openQuickView(product)}>Select Options</button>
                 </div>
               </div>
             ))
@@ -110,8 +115,8 @@ const ChettinadShowcase = () => {
 
         <div className="chettinad-dots">
           {!loading && products.map((_, index) => (
-            <span 
-              key={index} 
+            <span
+              key={index}
               className={`dot ${index === activeIndex ? 'active' : ''}`}
               onClick={() => handleDotClick(index)}
               style={{ cursor: 'pointer' }}
@@ -120,10 +125,11 @@ const ChettinadShowcase = () => {
         </div>
 
         <div className="chettinad-view-all-wrapper">
-          <button className="chettinad-view-all-btn" onClick={() => window.location.href = '/chettinad'}>
+          <button className="chettinad-view-all-btn" onClick={() => navigate('/categories/GIRLS')}>
             View All
           </button>
         </div>
+        {selectedProduct && <QuickViewModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
       </div>
     </section>
   );

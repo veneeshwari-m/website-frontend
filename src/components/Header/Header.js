@@ -5,6 +5,7 @@ import { GraphQLClient, gql } from 'graphql-request';
 import { useCart } from '../../context/CartContext';
 import { MdKeyboardArrowDown } from 'react-icons/md';
 import { useNavigate, Link } from 'react-router-dom';
+import SearchDrawer from '../SearchDrawer/SearchDrawer';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
@@ -38,6 +39,7 @@ const Header = () => {
   const { getCartCount } = useCart();
   const cartCount = getCartCount();
   const navigate = useNavigate();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -81,9 +83,6 @@ const Header = () => {
               </li>
             ))}
             <li className="nav-item">
-              <Link to="/clearance">Clearance Sale Live Now!</Link>
-            </li>
-            <li className="nav-item">
               <Link to="/stores">Our Stores</Link>
             </li>
             <li className="nav-item">
@@ -94,7 +93,7 @@ const Header = () => {
 
       
         <div className="header-icons">
-          <button className="icon-btn" aria-label="Search">
+          <button className="icon-btn" aria-label="Search" onClick={() => setIsSearchOpen(true)}>
             <FiSearch />
           </button>
           <button className="icon-btn" aria-label="User Profile" onClick={() => {
@@ -113,6 +112,7 @@ const Header = () => {
           </button>
         </div>
       </div>
+      <SearchDrawer isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </header>
   );
 };

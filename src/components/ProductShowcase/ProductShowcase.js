@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ProductShowcase.css';
 import { GraphQLClient, gql } from 'graphql-request';
+import { useNavigate } from 'react-router-dom';
 import QuickViewModal from '../QuickViewModal/QuickViewModal';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
@@ -41,6 +42,7 @@ const ProductShowcase = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -81,7 +83,7 @@ const ProductShowcase = () => {
         ) : products.length > 0 ? (
           products.map((product) => (
             <div className="product-card" key={product.id}>
-              <div className="product-image-wrapper">
+              <div className="product-image-wrapper" style={{ cursor: 'pointer' }} onClick={() => navigate(`/product/${product.id}`)}>
                 <img 
                   src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'} 
                   alt={product.name} 
@@ -92,8 +94,8 @@ const ProductShowcase = () => {
                 <h3 className="product-name" title={product.name}>
                   {product.name}
                 </h3>
-                <div className="product-price">
-                  {Number(product.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                <div className="showcase-price">
+                  Rs. {Number(product.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </div>
                 <button className="select-options-btn" onClick={() => openQuickView(product)}>Select Options</button>
               </div>
@@ -105,7 +107,7 @@ const ProductShowcase = () => {
       </div>
 
       <div className="shop-more-container">
-        <button className="shop-more-btn" onClick={() => window.location.href = '/girls'}>
+        <button className="shop-more-btn" onClick={() => navigate('/categories/GIRLS')}>
           View All
         </button>
       </div>

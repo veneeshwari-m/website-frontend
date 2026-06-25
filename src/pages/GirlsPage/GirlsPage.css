@@ -1,0 +1,119 @@
+@import '../CategoryPage/CategoryPage.css';
+
+/* Pagination Controls */
+.girls-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+  gap: 15px;
+  padding-top: 30px;
+  border-top: 1px solid #eee;
+  grid-column: 1 / -1;
+}
+
+.pagination-arrow {
+  background: transparent;
+  border: none;
+  color: #1a365d;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.pagination-arrow:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-arrow:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.pagination-numbers {
+  display: flex;
+  gap: 10px;
+}
+
+.pagination-number {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.pagination-number:hover {
+  background: #f0f0f0;
+}
+
+.pagination-number.active {
+  background: #1a365d;
+  color: white;
+  font-weight: 600;
+}
+
+/* Info Banners */
+.girls-info-banners {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 80px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.info-banner-item {
+  background-color: #e0f7fa; /* Light cyan background */
+  padding: 30px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  min-width: 250px;
+  max-width: 350px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  transition: transform 0.3s;
+}
+
+.info-banner-item:hover {
+  transform: translateY(-3px);
+}
+
+.info-banner-icon-wrapper {
+  font-size: 32px;
+  color: #00838f; /* Darker cyan for icons */
+}
+
+.info-banner-text h4 {
+  margin: 0 0 5px 0;
+  color: #111;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.info-banner-text p {
+  margin: 0;
+  color: #555;
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .girls-info-banners {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .info-banner-item {
+    width: 100%;
+  }
+}

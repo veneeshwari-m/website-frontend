@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import './ProductCarousel.css';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { GraphQLClient, gql } from 'graphql-request';
+import { useNavigate } from 'react-router-dom';
+import QuickViewModal from '../QuickViewModal/QuickViewModal';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
@@ -28,8 +30,9 @@ const GET_PRODUCTS = gql`
   }
 `;
 
-const CarouselCard = ({ product }) => {
+const CarouselCard = ({ product, openQuickView }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
   const displayImage = product.images && product.images.length > 0
     ? (isHovered && product.images.length > 1 ? product.images[1] : product.images[0])
     : '/images/placeholder.png';
@@ -40,7 +43,7 @@ const CarouselCard = ({ product }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="carousel-image-wrapper">
+      <div className="carousel-image-wrapper" style={{ cursor: 'pointer' }} onClick={() => navigate(`/product/${product.id}`)}>
         <div className="badge-new">New</div>
         <img
           src={displayImage}
@@ -55,7 +58,7 @@ const CarouselCard = ({ product }) => {
         <div className="carousel-price">
           Rs. {Number(product.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
         </div>
-        <button className="carousel-select-btn">Select Options</button>
+        <button className="carousel-select-btn" onClick={() => openQuickView(product)}>Select Options</button>
       </div>
     </div>
   );
@@ -64,7 +67,13 @@ const CarouselCard = ({ product }) => {
 const ProductCarousel = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const scrollContainerRef = useRef(null);
+  const navigate = useNavigate();
+
+  const openQuickView = (product) => {
+    setSelectedProduct(product);
+  };
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
@@ -131,7 +140,7 @@ const ProductCarousel = () => {
                 <p>Loading products...</p>
               ) : products.length > 0 ? (
                 products.map((product) => (
-                  <CarouselCard key={product.id} product={product} />
+                  <CarouselCard key={product.id} product={product} openQuickView={openQuickView} />
                 ))
               ) : (
                 <p>No products found.</p>
@@ -146,11 +155,12 @@ const ProductCarousel = () => {
           </div>
 
           <div className="carousel-view-all-container">
-            <button className="carousel-view-all-btn" onClick={() => window.location.href = '/girls'}>
+            <button className="newborn-view-all-btn" onClick={() => navigate('/categories/GIRLS')}>
               View All
             </button>
           </div>
         </div>
+        {selectedProduct && <QuickViewModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
       </section>
 
       {/* Girls Wear Banner Section (Second Image) */}

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './JablaShowcase.css';
 import { GraphQLClient, gql } from 'graphql-request';
+import { useNavigate } from 'react-router-dom';
+import QuickViewModal from '../QuickViewModal/QuickViewModal';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
@@ -18,6 +20,9 @@ const GET_PRODUCTS = gql`
 const JablaShowcase = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const openQuickView = (product) => { setSelectedProduct(product); };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -50,7 +55,7 @@ const JablaShowcase = () => {
           ) : products.length > 0 ? (
             products.map((product) => (
               <div className="jabla-card" key={product.id}>
-                <div className="jabla-image-wrapper">
+                <div className="jabla-image-wrapper" style={{ cursor: 'pointer' }} onClick={() => navigate(`/product/${product.id}`)}>
                   <img 
                     src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'} 
                     alt={product.name} 
@@ -64,9 +69,9 @@ const JablaShowcase = () => {
                 <div className="jabla-info">
                   <h3 className="jabla-name" title={product.name}>{product.name}</h3>
                   <div className="jabla-price">
-                    {Number(product.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    Rs. {Number(product.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </div>
-                  <button className="jabla-select-btn">Select Options</button>
+                  <button className="jabla-select-btn" onClick={() => openQuickView(product)}>Select Options</button>
                 </div>
               </div>
             ))
@@ -76,10 +81,11 @@ const JablaShowcase = () => {
         </div>
 
         <div className="jabla-view-all-wrapper" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-          <button className="jabla-view-all-btn" onClick={() => window.location.href = '/jabla'}>
+          <button className="jabla-view-all-btn" onClick={() => navigate('/categories/GIRLS')}>
             View All
           </button>
         </div>
+        {selectedProduct && <QuickViewModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
       </div>
     </section>
   );
