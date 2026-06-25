@@ -7,8 +7,8 @@ import QuickViewModal from '../../components/QuickViewModal/QuickViewModal';
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
 const GET_PRODUCTS_BY_CATEGORY = gql`
-  query GetProductsByCategoryCode($code: String!) {
-    getProductsByCategoryCode(code: $code) {
+  query GetProductsByCategoryCode($code: String!, $sort: String) {
+    getProductsByCategoryCode(code: $code, sort: $sort) {
       products {
         id
         name
@@ -56,6 +56,7 @@ const CategoryPage = () => {
   });
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [sort, setSort] = useState('features');
 
   // Active filters state
   const [activeFilters, setActiveFilters] = useState({
@@ -107,7 +108,7 @@ const CategoryPage = () => {
       setLoading(true);
       try {
         const client = new GraphQLClient(GRAPHQL_ENDPOINT);
-        const data = await client.request(GET_PRODUCTS_BY_CATEGORY, { code: categoryCode });
+        const data = await client.request(GET_PRODUCTS_BY_CATEGORY, { code: categoryCode, sort: sort });
         if (data.getProductsByCategoryCode) {
           setProducts(data.getProductsByCategoryCode.products || []);
           if (data.getProductsByCategoryCode.filters) {
@@ -127,7 +128,7 @@ const CategoryPage = () => {
       fetchCategoryProducts();
     }
     window.scrollTo(0, 0);
-  }, [categoryCode]);
+  }, [categoryCode, sort]);
 
   const openQuickView = (product) => {
     setSelectedProduct({
@@ -174,7 +175,7 @@ const CategoryPage = () => {
 
   return (
     <div className="category-page-container">
-      
+
       {/* Breadcrumbs */}
       <div className="category-breadcrumbs">
         <Link to="/">Home</Link> - Best sellers_{formattedCategoryName}
@@ -185,11 +186,11 @@ const CategoryPage = () => {
 
       {/* Layout Grid (Sidebar + Content) */}
       <div className="category-main-layout">
-        
+
         {/* Sidebar */}
         <aside className="category-sidebar">
           <div className="filter-accordion">
-            
+
             <div className={`filter-group ${expandedFilters.size ? 'expanded' : ''}`}>
               <div className="filter-header" onClick={() => toggleFilter('size')}>
                 <span>Size</span>
@@ -200,11 +201,11 @@ const CategoryPage = () => {
                   <div className="filter-checkbox-list">
                     {filterData.sizes.map((size) => (
                       <label className="filter-checkbox-item" key={size.name}>
-                        <input 
-                          type="checkbox" 
-                          checked={activeFilters.sizes.includes(size.name)} 
-                          onChange={() => handleFilterChange('sizes', size.name)} 
-                        /> 
+                        <input
+                          type="checkbox"
+                          checked={activeFilters.sizes.includes(size.name)}
+                          onChange={() => handleFilterChange('sizes', size.name)}
+                        />
                         {size.name} ({size.count})
                       </label>
                     ))}
@@ -224,11 +225,11 @@ const CategoryPage = () => {
                   <div className="filter-checkbox-list">
                     {filterData.brands.map((brand) => (
                       <label className="filter-checkbox-item" key={brand.name}>
-                        <input 
-                          type="checkbox" 
-                          checked={activeFilters.brands.includes(brand.name)} 
-                          onChange={() => handleFilterChange('brands', brand.name)} 
-                        /> 
+                        <input
+                          type="checkbox"
+                          checked={activeFilters.brands.includes(brand.name)}
+                          onChange={() => handleFilterChange('brands', brand.name)}
+                        />
                         {brand.name} ({brand.count})
                       </label>
                     ))}
@@ -247,13 +248,13 @@ const CategoryPage = () => {
                 <div className="filter-content">
                   <div className="filter-colors-grid">
                     {filterData.colors.map((color) => (
-                      <div 
-                        className={`color-swatch-wrapper ${activeFilters.colors.includes(color.name) ? 'selected' : ''}`} 
-                        key={color.name} 
+                      <div
+                        className={`color-swatch-wrapper ${activeFilters.colors.includes(color.name) ? 'selected' : ''}`}
+                        key={color.name}
                         title={`${color.name} (${color.count})`}
                         onClick={() => handleFilterChange('colors', color.name)}
                       >
-                        <div className="color-swatch" style={{backgroundColor: color.name.toLowerCase().replace(/\s/g, '')}}></div>
+                        <div className="color-swatch" style={{ backgroundColor: color.name.toLowerCase().replace(/\s/g, '') }}></div>
                       </div>
                     ))}
                     {filterData.colors.length === 0 && <span className="filter-text-item">No colors available</span>}
@@ -271,19 +272,19 @@ const CategoryPage = () => {
                 <div className="filter-content">
                   <div className="filter-checkbox-list">
                     <label className="filter-checkbox-item">
-                      <input 
-                        type="checkbox" 
-                        checked={activeFilters.stock.includes('In stock')} 
-                        onChange={() => handleFilterChange('stock', 'In stock')} 
-                      /> 
+                      <input
+                        type="checkbox"
+                        checked={activeFilters.stock.includes('In stock')}
+                        onChange={() => handleFilterChange('stock', 'In stock')}
+                      />
                       In stock ({filterData.stock.inStock})
                     </label>
                     <label className="filter-checkbox-item">
-                      <input 
-                        type="checkbox" 
-                        checked={activeFilters.stock.includes('Out of stock')} 
-                        onChange={() => handleFilterChange('stock', 'Out of stock')} 
-                      /> 
+                      <input
+                        type="checkbox"
+                        checked={activeFilters.stock.includes('Out of stock')}
+                        onChange={() => handleFilterChange('stock', 'Out of stock')}
+                      />
                       Out of stock ({filterData.stock.outOfStock})
                     </label>
                   </div>
@@ -301,19 +302,19 @@ const CategoryPage = () => {
                   <div className="filter-price-inputs">
                     <div className="price-input-box">
                       <span>₹</span>
-                      <input 
-                        type="number" 
-                        value={activeFilters.price.min} 
-                        onChange={(e) => setActiveFilters(prev => ({ ...prev, price: { ...prev.price, min: Number(e.target.value) } }))} 
+                      <input
+                        type="number"
+                        value={activeFilters.price.min}
+                        onChange={(e) => setActiveFilters(prev => ({ ...prev, price: { ...prev.price, min: Number(e.target.value) } }))}
                       />
                     </div>
                     <span>-</span>
                     <div className="price-input-box">
                       <span>₹</span>
-                      <input 
-                        type="number" 
-                        value={activeFilters.price.max} 
-                        onChange={(e) => setActiveFilters(prev => ({ ...prev, price: { ...prev.price, max: Number(e.target.value) } }))} 
+                      <input
+                        type="number"
+                        value={activeFilters.price.max}
+                        onChange={(e) => setActiveFilters(prev => ({ ...prev, price: { ...prev.price, max: Number(e.target.value) } }))}
                       />
                     </div>
                   </div>
@@ -328,7 +329,7 @@ const CategoryPage = () => {
 
         {/* Main Content Area */}
         <div className="category-content">
-          
+
           {/* Top Bar (Results Count & Sort) */}
           <div className="category-top-bar">
             <div className="results-count">
@@ -336,11 +337,14 @@ const CategoryPage = () => {
             </div>
             <div className="sort-by-wrapper">
               <span>Sort by:</span>
-              <select className="sort-by-select">
+              <select className="sort-by-select" value={sort} onChange={(e) => setSort(e.target.value)}>
                 <option value="features">Features</option>
+                <option value="most-relevant">Most relevant</option>
+                <option value="bestselling">Best selling</option>
                 <option value="price-low">Price, low to high</option>
                 <option value="price-high">Price, high to low</option>
-                <option value="new">Date, new to old</option>
+                <option value="atoz">Alphabetically, A-Z</option>
+                <option value="ztoa">Alphabetically, Z-A</option>
               </select>
             </div>
           </div>
@@ -355,20 +359,20 @@ const CategoryPage = () => {
             ) : filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
                 <div className="category-card" key={product.id}>
-                  <div 
-                    className="category-image-wrapper" 
+                  <div
+                    className="category-image-wrapper"
                     onClick={() => navigate(`/product/${product.id}`)}
                     style={{ cursor: 'pointer' }}
                   >
-                    <img 
-                      src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'} 
-                      alt={product.name} 
-                      className="category-image" 
+                    <img
+                      src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'}
+                      alt={product.name}
+                      className="category-image"
                     />
                   </div>
                   <div className="category-info">
-                    <h3 
-                      className="category-name" 
+                    <h3
+                      className="category-name"
                       title={product.name}
                       onClick={() => navigate(`/product/${product.id}`)}
                       style={{ cursor: 'pointer' }}
