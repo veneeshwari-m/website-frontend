@@ -27,6 +27,51 @@ const GET_ORDERS = gql`
   }
 `;
 
+const GET_USER = gql`
+  query GetUserById($id: ID!) {
+    getUserById(id: $id) {
+      id
+      username
+      email
+      phone_number
+      addresses {
+        id
+        firstName
+        lastName
+        address
+        apartment
+        city
+        state
+        pincode
+        country
+        phone
+        isDefault
+      }
+    }
+  }
+`;
+
+const UPDATE_USER = gql`
+  mutation UpdateUser($id: ID!, $input: UpdateUserInput) {
+    updateUser(id: $id, input: $input) {
+      id
+      addresses {
+        id
+        firstName
+        lastName
+        address
+        apartment
+        city
+        state
+        pincode
+        country
+        phone
+        isDefault
+      }
+    }
+  }
+`;
+
 const ProfilePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -37,56 +82,111 @@ const ProfilePage = () => {
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
 
   useEffect(() => {
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+    }
+  }, [location.state]);
+
+  useEffect(() => {
     window.scrollTo(0, 0);
     const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
-    
+
     if (!token) {
       navigate('/login');
       return;
     }
 
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+      fetchUserDetails(parsedUser.id || parsedUser._id, token);
     }
   }, [navigate]);
 
+  const fetchUserDetails = async (userId, token) => {
+    try {
+      const client = new GraphQLClient(GRAPHQL_ENDPOINT, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await client.request(GET_USER, { id: userId });
+      if (data.getUserById) {
+        setUser(prev => ({ ...prev, ...data.getUserById }));
+        localStorage.setItem('user', JSON.stringify({ ...JSON.parse(localStorage.getItem('user')), ...data.getUserById }));
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  };
+
   useEffect(() => {
+    const fetchOrders = async () => {
+      setLoadingOrders(true);
+      try {
+        const token = localStorage.getItem('token');
+        const client = new GraphQLClient(GRAPHQL_ENDPOINT, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const currentUserId = user.id || user._id;
+        const data = await client.request(GET_ORDERS, { search: currentUserId });
+
+        const allOrders = data.getOrder || [];
+        const userOrders = allOrders.filter(order => order.userId === currentUserId);
+
+        userOrders.sort((a, b) => parseInt(b.createdAt) - parseInt(a.createdAt));
+        setOrders(userOrders);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      } finally {
+        setLoadingOrders(false);
+      }
+    };
+
     if (activeTab === 'orders' && user) {
       fetchOrders();
     }
   }, [activeTab, user]);
-
-  const fetchOrders = async () => {
-    setLoadingOrders(true);
-    try {
-      const token = localStorage.getItem('token');
-      const client = new GraphQLClient(GRAPHQL_ENDPOINT, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      // We pass the userId as the search parameter. Depending on backend implementation this may filter.
-      // We will also filter locally to be safe.
-      const currentUserId = user.id || user._id;
-      const data = await client.request(GET_ORDERS, { search: currentUserId });
-      
-      const allOrders = data.getOrder || [];
-      const userOrders = allOrders.filter(order => order.userId === currentUserId);
-      
-      // Sort by newest first
-      userOrders.sort((a, b) => parseInt(b.createdAt) - parseInt(a.createdAt));
-      setOrders(userOrders);
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-    } finally {
-      setLoadingOrders(false);
-    }
-  };
 
   const handleSignOut = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('guestId');
     navigate('/login');
+  };
+
+  const handleSaveAddress = async (newAddress) => {
+    try {
+      const token = localStorage.getItem('token');
+      const client = new GraphQLClient(GRAPHQL_ENDPOINT, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const currentUserId = user.id || user._id;
+      const updatedAddresses = [...(user.addresses || [])];
+
+      if (newAddress.isDefault) {
+        updatedAddresses.forEach(addr => addr.isDefault = false);
+      }
+
+      updatedAddresses.push(newAddress);
+
+      const input = {
+        addresses: updatedAddresses.map(addr => {
+          const { id, ...rest } = addr;
+          return rest;
+        })
+      };
+
+      const data = await client.request(UPDATE_USER, { id: currentUserId, input });
+      if (data.updateUser) {
+        setUser(prev => ({ ...prev, addresses: data.updateUser.addresses }));
+        localStorage.setItem('user', JSON.stringify({ ...JSON.parse(localStorage.getItem('user')), addresses: data.updateUser.addresses }));
+        setIsAddressModalOpen(false);
+      }
+    } catch (error) {
+      console.error("Error updating user addresses:", error);
+      alert("Failed to save address. Please try again.");
+    }
   };
 
   if (!user) return <div className="profile-loading">Loading...</div>;
@@ -96,13 +196,13 @@ const ProfilePage = () => {
       <div className="profile-main">
         {/* Left Sidebar */}
         <div className="profile-sidebar">
-          <div 
+          <div
             className={`sidebar-item ${activeTab === 'orders' ? 'active' : ''}`}
             onClick={() => setActiveTab('orders')}
           >
             Orders
           </div>
-          <div 
+          <div
             className={`sidebar-item ${activeTab === 'profile' ? 'active' : ''}`}
             onClick={() => setActiveTab('profile')}
           >
@@ -138,10 +238,28 @@ const ProfilePage = () => {
                 <button className="add-btn" onClick={() => setIsAddressModalOpen(true)}>Add</button>
               </div>
               <div className="profile-card bg-gray">
-                <div className="no-address-message">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                  <span>No addresses added</span>
-                </div>
+                {user.addresses && user.addresses.length > 0 ? (
+                  <div className="addresses-list">
+                    {user.addresses.map((addr, idx) => (
+                      <div key={idx} className="address-item" style={{ padding: '15px', borderBottom: '1px solid #eee' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <strong>{addr.firstName} {addr.lastName} {addr.isDefault && <span style={{ fontSize: '12px', background: '#eee', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px' }}>Default</span>}</strong>
+                        </div>
+                        <div style={{ color: '#555', fontSize: '14px', lineHeight: '1.5' }}>
+                          <div>{addr.address} {addr.apartment && `, ${addr.apartment}`}</div>
+                          <div>{addr.city}, {addr.state} {addr.pincode}</div>
+                          <div>{addr.country}</div>
+                          <div style={{ marginTop: '8px' }}>Phone: {addr.phone}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="no-address-message">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span>No addresses added</span>
+                  </div>
+                )}
               </div>
 
               {/* Marketing Preferences */}
@@ -219,7 +337,7 @@ const ProfilePage = () => {
       </div>
 
       {isAddressModalOpen && (
-        <AddAddressModal onClose={() => setIsAddressModalOpen(false)} />
+        <AddAddressModal onClose={() => setIsAddressModalOpen(false)} onSave={handleSaveAddress} />
       )}
     </div>
   );

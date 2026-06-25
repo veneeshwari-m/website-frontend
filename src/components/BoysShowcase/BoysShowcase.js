@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './BoysShowcase.css';
 import { GraphQLClient, gql } from 'graphql-request';
+import { useNavigate } from 'react-router-dom';
+import QuickViewModal from '../QuickViewModal/QuickViewModal';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
@@ -30,6 +32,9 @@ const GET_PRODUCTS = gql`
 const BoysShowcase = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const openQuickView = (product) => { setSelectedProduct(product); };
 
   useEffect(() => {
     const fetchBoysProducts = async () => {
@@ -81,7 +86,7 @@ const BoysShowcase = () => {
           ) : products.length > 0 ? (
             products.map((product) => (
               <div className="boys-card" key={product.id}>
-                <div className="boys-image-wrapper">
+                <div className="boys-image-wrapper" style={{ cursor: 'pointer' }} onClick={() => navigate(`/product/${product.id}`)}>
                   <img 
                     src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'} 
                     alt={product.name} 
@@ -97,7 +102,7 @@ const BoysShowcase = () => {
                   <div className="boys-price">
                     Rs. {Number(product.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </div>
-                  <button className="boys-select-btn">Select Options</button>
+                  <button className="boys-select-btn" onClick={() => openQuickView(product)}>Select Options</button>
                 </div>
               </div>
             ))
@@ -107,10 +112,11 @@ const BoysShowcase = () => {
         </div>
 
         <div className="boys-view-all-wrapper">
-          <button className="boys-view-all-btn" onClick={() => window.location.href = '/boys'}>
+          <button className="boys-view-all-btn" onClick={() => navigate('/categories/BOYS')}>
             View All
           </button>
         </div>
+        {selectedProduct && <QuickViewModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
       </div>
     </section>
   );

@@ -215,7 +215,7 @@
   cursor: pointer;
   font-weight: bold;
   transition: opacity 0.2s;
-}
+} 
 
 .buy-now-btn:hover {
   opacity: 0.9;

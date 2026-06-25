@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './PromoCarousel.css';
 import { GraphQLClient, gql } from 'graphql-request';
+import { useNavigate } from 'react-router-dom';
+import QuickViewModal from '../QuickViewModal/QuickViewModal';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
@@ -10,7 +12,16 @@ const GET_PRODUCTS = gql`
       id
       name
       price
+      mrp
+      discountPercentage
       images
+      brand
+      variants {
+        color
+        size
+        stock
+      }
+      description
     }
   }
 `;
@@ -18,18 +29,18 @@ const GET_PRODUCTS = gql`
 const PromoCarousel = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const client = new GraphQLClient(GRAPHQL_ENDPOINT);
         const data = await client.request(GET_PRODUCTS, { search: '' });
-
-     
-        const fetchedProducts = data.getProduct ? data.getProduct.slice(0, 6) : [];
+        const fetchedProducts = data.getProduct ? data.getProduct.slice(0, 5) : [];
         setProducts(fetchedProducts);
       } catch (err) {
-        console.error('Error fetching products:', err);
+        console.error('Error fetching promo products:', err);
       } finally {
         setLoading(false);
       }
@@ -73,7 +84,7 @@ const PromoCarousel = () => {
                 </div>
                 <div className="promo-info">
                   <p className="promo-desc" title={product.name}>{product.name}</p>
-                  <button className="promo-shop-btn">Shop Now</button>
+                  <button className="promo-shop-btn" onClick={() => navigate(`/product/${product.id}`)}>Shop Now</button>
                 </div>
               </div>
             ))
@@ -83,7 +94,7 @@ const PromoCarousel = () => {
         </div>
         
         <div className="promo-view-all-wrapper" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-          <button className="promo-view-all-btn" onClick={() => window.location.href = '/promos'}>
+          <button className="promo-view-all-btn" onClick={() => navigate('/CartPage')}>
             View All
           </button>
         </div>

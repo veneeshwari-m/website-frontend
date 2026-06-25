@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './CottonFrockShowcase.css';
 import { GraphQLClient, gql } from 'graphql-request';
+import { useNavigate } from 'react-router-dom';
+import QuickViewModal from '../QuickViewModal/QuickViewModal';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
@@ -18,6 +20,9 @@ const GET_PRODUCTS = gql`
 const CottonFrockShowcase = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const openQuickView = (product) => { setSelectedProduct(product); };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -57,7 +62,7 @@ const CottonFrockShowcase = () => {
           ) : products.length > 0 ? (
             products.map((product) => (
               <div className="cotton-frock-card" key={product.id}>
-                <div className="cotton-frock-image-wrapper">
+                <div className="cotton-frock-image-wrapper" style={{ cursor: 'pointer' }} onClick={() => navigate(`/product/${product.id}`)}>
                   <img 
                     src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'} 
                     alt={product.name} 
@@ -71,9 +76,9 @@ const CottonFrockShowcase = () => {
                 <div className="cotton-frock-info">
                   <h3 className="cotton-frock-name" title={product.name}>{product.name}</h3>
                   <div className="cotton-frock-price">
-                    {Number(product.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    Rs. {Number(product.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </div>
-                  <button className="cotton-frock-select-btn">Select Options</button>
+                  <button className="cotton-frock-select-btn" onClick={() => openQuickView(product)}>Select Options</button>
                 </div>
               </div>
             ))
@@ -83,10 +88,11 @@ const CottonFrockShowcase = () => {
         </div>
 
         <div className="cotton-frock-view-all-wrapper">
-          <button className="cotton-frock-view-all-btn" onClick={() => window.location.href = '/cotton-frock'}>
+          <button className="cotton-frock-view-all-btn" onClick={() => navigate('/categories/GIRLS')}>
             View All
           </button>
         </div>
+        {selectedProduct && <QuickViewModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
       </div>
     </section>
   );
