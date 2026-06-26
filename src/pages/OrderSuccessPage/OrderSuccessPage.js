@@ -170,10 +170,10 @@ const OrderSuccessPage = () => {
         )}
 
         <div className="success-actions">
-          <button className="action-btn primary-btn" onClick={() => navigate('/profile', { state: { activeTab: 'orders' } })}>
+          <button className="action-btn success-primary-btn" onClick={() => navigate('/profile', { state: { activeTab: 'orders' } })}>
             View My Orders
           </button>
-          <button className="action-btn secondary-btn" onClick={() => navigate('/')}>
+          <button className="action-btn success-secondary-btn" onClick={() => navigate('/')}>
             Continue Shopping
           </button>
         </div>
