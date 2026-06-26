@@ -4,7 +4,7 @@ import './Header.css';
 import { GraphQLClient, gql } from 'graphql-request';
 import { useCart } from '../../context/CartContext';
 import { MdKeyboardArrowDown } from 'react-icons/md';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import SearchDrawer from '../SearchDrawer/SearchDrawer';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
@@ -70,23 +70,23 @@ const Header = () => {
         <nav className="header-nav">
           <ul className="nav-list">
             <li className="nav-item">
-              <Link to="/">Home</Link>
+              <NavLink to="/" end>Home</NavLink>
             </li>
             {categories.map((category) => (
               <li className="nav-item" key={category.id}>
-                <Link to={`/categories/${category.code}`}>
+                <NavLink to={`/categories/${category.code}`}>
                   {category.name}
                   {category.subCategories && category.subCategories.length > 0 && (
                     <MdKeyboardArrowDown className="nav-arrow" />
                   )}
-                </Link>
+                </NavLink>
               </li>
             ))}
             <li className="nav-item">
-              <Link to="/stores">Our Stores</Link>
+              <NavLink to="/stores">Our Stores</NavLink>
             </li>
             <li className="nav-item">
-              <Link to="/blog">Blog</Link>
+              <NavLink to="/blog">Blog</NavLink>
             </li>
           </ul>
         </nav>
