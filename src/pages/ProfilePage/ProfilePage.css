@@ -298,9 +298,67 @@
   padding-top: 15px;
 }
 
+.order-body {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  gap: 20px;
+}
+
+.order-items-column {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.order-address-column {
+  flex: 1;
+  padding-left: 20px;
+  border-left: 1px solid #e1e1e1;
+}
+
+.order-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.order-item-image-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.order-item-image-wrapper img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.order-address-info h5 {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #777;
+  text-transform: uppercase;
+}
+
+.order-address-info p {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: #555;
+}
+
+.order-address-info p strong {
+  font-size: 14px;
+  color: #333;
+}
+
 @media (max-width: 768px) {
   .profile-main {
     flex-direction: column;
+    gap: 20px;
   }
   
   .profile-sidebar {
@@ -308,9 +366,60 @@
     flex-direction: row;
     border-bottom: 1px solid #e1e1e1;
     padding-bottom: 15px;
+    overflow-x: auto;
   }
   
   .sidebar-item {
     padding: 10px 15px;
+    white-space: nowrap;
+  }
+
+  .order-body {
+    flex-direction: column;
+  }
+
+  .order-address-column {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid #e1e1e1;
+    padding-top: 15px;
+  }
+
+  .order-item-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .order-item-price {
+    align-self: flex-start;
+    padding-left: 75px; /* Aligns with text below image */
+  }
+
+  .order-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .order-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .view-order-btn {
+    align-self: flex-start;
+  }
+
+  .info-row {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .signout-links {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

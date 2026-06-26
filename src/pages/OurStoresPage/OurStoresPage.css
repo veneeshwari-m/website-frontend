@@ -105,3 +105,16 @@
 .osp-direction-btn:hover {
   background-color: #f8f9fa;
 }
+
+@media (max-width: 480px) {
+  .osp-section {
+    padding: 30px 15px;
+  }
+  .osp-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  .osp-actions {
+    max-width: 100%;
+  }
+}
