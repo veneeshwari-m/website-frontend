@@ -22,6 +22,7 @@ const GET_SHOPS = gql`
 
 const OurStores = () => {
   const [stores, setStores] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -8,12 +8,13 @@ const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://local
 
 const GET_PRODUCTS = gql`
   query GetProduct($search: String) {
+    getProduct(search: $search) {
+      products {
+        id
+        name
+        price
+        images
       }
-    getProduct(search: $search) {\n      products {
-      id
-      name
-      price
-      images
     }
   }
 `;

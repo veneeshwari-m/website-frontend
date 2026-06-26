@@ -7,15 +7,15 @@ const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://local
 
 const GET_PRODUCTS = gql`
   query GetProduct($search: String) {
-      }
-    getProduct(search: $search) {\n      products {
+    getProduct(search: $search) {
+      products {
       id
       name
       price
       images
     }
   }
-`;
+}`;
 
 const TRENDING_SEARCHES = [
   "Newborn Pattu Frock",
@@ -36,8 +36,7 @@ const SearchDrawer = ({ isOpen, onClose }) => {
     if (isOpen && searchTerm === '') {
       fetchProducts('');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
+  }, [isOpen, searchTerm]);
 
   // Debounced search
   useEffect(() => {
@@ -70,9 +69,7 @@ const SearchDrawer = ({ isOpen, onClose }) => {
   };
 
   const handleProductClick = (productId) => {
-    // Navigate to product details if we had a dedicated page,
-    // for now we can just close the drawer and let them search in the main page
-    // or navigate to a category. 
+    navigate(`/product/${productId}`);
     onClose();
   };
 

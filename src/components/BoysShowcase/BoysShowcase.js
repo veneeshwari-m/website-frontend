@@ -20,8 +20,8 @@ const GET_CATEGORIES = gql`
 
 const GET_PRODUCTS = gql`
   query GetProduct($search: String) {
-      }
-    getProduct(search: $search) {\n      products {
+    getProduct(search: $search) {
+      products {
       id
       name
       price
@@ -30,7 +30,7 @@ const GET_PRODUCTS = gql`
       productCategoriesCode
     }
   }
-`;
+}`;
 
 const BoysShowcase = () => {
   const [products, setProducts] = useState([]);
@@ -51,7 +51,7 @@ const BoysShowcase = () => {
         );
         
         const prodData = await client.request(GET_PRODUCTS, { search: '' });
-        let allProducts = prodData.getProduct || [];
+        let allProducts = prodData.getProduct?.products || [];
         
     
         let boysProducts = [];
