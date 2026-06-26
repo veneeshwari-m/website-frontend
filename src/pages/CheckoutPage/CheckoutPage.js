@@ -505,7 +505,7 @@ const Checkout = ({ onNavigate }) => {
             disabled={isPlacingOrder}
           >
             {isPlacingOrder ? (
-               <><span className="spinner"></span> Processing...</>
+               <><span className="checkout-spinner"></span> Processing...</>
             ) : "Place Secure Order"}
           </button>
           

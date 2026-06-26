@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { GraphQLClient, gql } from 'graphql-request';
 import { useCart } from '../../context/CartContext';
 import { FiShare2, FiHelpCircle, FiMaximize2, FiTruck, FiTag, FiBox } from 'react-icons/fi';
-import { AiFillStar, AiOutlineEye } from 'react-icons/ai';
+import { AiFillStar } from 'react-icons/ai';
 import './ProductPage.css';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './OurStoresPage.css';
 import { GraphQLClient, gql } from 'graphql-request';
-import { FaWhatsapp, FaMapMarkerAlt } from 'react-icons/fa';
+
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
@@ -22,7 +22,7 @@ const GET_SHOPS = gql`
 
 const OurStores = () => {
   const [stores, setStores] = useState([]);
-  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     const fetchStores = async () => {
@@ -49,8 +49,6 @@ const OurStores = () => {
       } catch (err) {
         console.error('Error fetching stores:', err);
         setStores([]);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -59,7 +57,7 @@ const OurStores = () => {
 
   const handleWhatsAppClick = (contactNumber) => {
     if (!contactNumber) return;
-    let primaryNumber = contactNumber.split(/[\/,]/)[0];
+    let primaryNumber = contactNumber.split(/[/,]/)[0];
     let cleanNumber = primaryNumber.replace(/[^\d+]/g, '');
     if (cleanNumber) {
       window.open(`https://wa.me/${cleanNumber}`, '_blank');
