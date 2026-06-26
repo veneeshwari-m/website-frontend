@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './PromoCarousel.css';
 import { GraphQLClient, gql } from 'graphql-request';
 import { useNavigate } from 'react-router-dom';
-import QuickViewModal from '../QuickViewModal/QuickViewModal';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
@@ -30,7 +29,6 @@ const GET_PRODUCTS = gql`
 const PromoCarousel = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedProduct, setSelectedProduct] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {

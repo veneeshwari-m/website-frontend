@@ -49,9 +49,9 @@ const Header = () => {
         const client = new GraphQLClient(GRAPHQL_ENDPOINT);
         const data = await client.request(GET_PRODUCT_CATEGORIES);
        
-        const parentCategories = (data.getProductCategories?.categories || []).filter(
-          cat => !cat.parentCategoryId
-        );
+        const parentCategories = (data.getProductCategories?.categories || [])
+          .filter(cat => !cat.parentCategoryId)
+          .reverse();
         setCategories(parentCategories);
       } catch (err) {
         console.error('Error fetching categories:', err);
