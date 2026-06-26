@@ -97,7 +97,6 @@ const PromoCarousel = () => {
             View All
           </button>
         </div>
-        {selectedProduct && <QuickViewModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
       </div>
     </section>
   );

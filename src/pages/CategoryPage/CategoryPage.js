@@ -36,8 +36,6 @@ const GET_PRODUCTS_BY_CATEGORY = gql`
         createdAt
         updatedAt
       }
-      totalCount
-      hasMore
       filters {
         sizes { name count }
         colors { name count }
@@ -138,9 +136,17 @@ const CategoryPage = () => {
         });
         if (data.getProductsByCategoryCode) {
           const newProducts = data.getProductsByCategoryCode.products || [];
-          setProducts(prev => isNewQuery ? newProducts : [...prev, ...newProducts]);
-          setHasMore(data.getProductsByCategoryCode.hasMore);
-          setTotalCount(data.getProductsByCategoryCode.totalCount || 0);
+          setProducts(prev => {
+            const updatedProducts = isNewQuery ? newProducts : [...prev, ...newProducts];
+            // Calculate hasMore without needing backend totalCount
+            setHasMore(newProducts.length === itemsPerPage);
+            
+            // Fallback totalCount to at least show something reasonable if backend doesn't return it
+            const newTotalCount = data.getProductsByCategoryCode.totalCount || (updatedProducts.length + (newProducts.length === itemsPerPage ? 1 : 0));
+            setTotalCount(newTotalCount);
+            
+            return updatedProducts;
+          });
           if (data.getProductsByCategoryCode.filters) {
             setFilterData(prev => prev.sizes.length > 0 && !isNewQuery ? prev : data.getProductsByCategoryCode.filters);
           }
