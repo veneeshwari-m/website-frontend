@@ -8,7 +8,8 @@ const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://local
 
 const GET_PRODUCTS = gql`
   query GetProduct($search: String) {
-    getProduct(search: $search) {
+      }
+    getProduct(search: $search) {\n      products {
       id
       name
       price
@@ -65,7 +66,7 @@ const ChettinadShowcase = () => {
         const data = await client.request(GET_PRODUCTS, { search: '' });
 
 
-        const fetchedProducts = data.getProduct ? data.getProduct.slice(0, 10) : [];
+        const fetchedProducts = data.getProduct?.products ? data.getProduct?.products.slice(0, 10) : [];
         setProducts(fetchedProducts);
       } catch (err) {
         console.error('Error fetching products:', err);

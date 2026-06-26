@@ -8,7 +8,8 @@ const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://local
 
 const GET_PRODUCTS = gql`
   query GetProduct($search: String) {
-    getProduct(search: $search) {
+      }
+    getProduct(search: $search) {\n      products {
       id
       name
       price
@@ -56,7 +57,7 @@ const SearchDrawer = ({ isOpen, onClose }) => {
       const client = new GraphQLClient(GRAPHQL_ENDPOINT);
       const data = await client.request(GET_PRODUCTS, { search });
       // Limit to 5 results for the drawer
-      setProducts((data.getProduct || []).slice(0, 5));
+      setProducts((data.getProduct?.products || []).slice(0, 5));
     } catch (err) {
       console.error('Error fetching search results:', err);
       setProducts([]);

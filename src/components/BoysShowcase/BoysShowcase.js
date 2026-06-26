@@ -9,16 +9,19 @@ const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://local
 const GET_CATEGORIES = gql`
   query GetProductCategories {
     getProductCategories {
-      id
-      name
-      code
+      categories {
+        id
+        name
+        code
+      }
     }
   }
 `;
 
 const GET_PRODUCTS = gql`
   query GetProduct($search: String) {
-    getProduct(search: $search) {
+      }
+    getProduct(search: $search) {\n      products {
       id
       name
       price
@@ -42,7 +45,7 @@ const BoysShowcase = () => {
         const client = new GraphQLClient(GRAPHQL_ENDPOINT);
         
         const catData = await client.request(GET_CATEGORIES);
-        const categories = catData.getProductCategories || [];
+        const categories = catData.getProductCategories?.categories || [];
         const boysCategory = categories.find(c => 
           c.name.toLowerCase().includes('boy') || c.code.toLowerCase().includes('boy')
         );
