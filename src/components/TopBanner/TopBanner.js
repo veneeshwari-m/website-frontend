@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { GraphQLClient, gql } from 'graphql-request';
 import './TopBanner.css';
-import { FaLessThan ,  FaGreaterThan } from "react-icons/fa";
+import { FaLessThan, FaGreaterThan } from "react-icons/fa";
+import { GraphQLClient, gql } from 'graphql-request';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
@@ -37,11 +38,11 @@ const TopBanner = () => {
   }, []);
 
   const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % messages.length);
+    setCurrentIndex((prevIndex) => messages.length > 0 ? (prevIndex + 1) % messages.length : 0);
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + messages.length) % messages.length);
+    setCurrentIndex((prevIndex) => messages.length > 0 ? (prevIndex - 1 + messages.length) % messages.length : 0);
   };
 
   useEffect(() => {
