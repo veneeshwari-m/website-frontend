@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { GraphQLClient, gql } from 'graphql-request';
 import './TopBanner.css';
 import { FaLessThan, FaGreaterThan } from "react-icons/fa";
-import { GraphQLClient, gql } from 'graphql-request';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
