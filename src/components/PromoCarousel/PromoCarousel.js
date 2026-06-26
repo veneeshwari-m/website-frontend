@@ -8,9 +8,9 @@ const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://local
 
 const GET_PRODUCTS = gql`
   query GetProduct($search: String) {
-      }
-    getProduct(search: $search) {\n      products {
-      id
+    getProduct(search: $search) {
+      products {
+        id
       name
       price
       mrp
@@ -25,7 +25,7 @@ const GET_PRODUCTS = gql`
       description
     }
   }
-`;
+}`;
 
 const PromoCarousel = () => {
   const [products, setProducts] = useState([]);
@@ -99,6 +99,7 @@ const PromoCarousel = () => {
             View All
           </button>
         </div>
+        {selectedProduct && <QuickViewModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
       </div>
     </section>
   );

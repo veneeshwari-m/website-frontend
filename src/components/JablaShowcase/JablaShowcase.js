@@ -8,15 +8,15 @@ const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://local
 
 const GET_PRODUCTS = gql`
   query GetProduct($search: String) {
-      }
-    getProduct(search: $search) {\n      products {
+    getProduct(search: $search) {
+      products {
       id
       name
       price
       images
     }
   }
-`;
+}`;
 
 const JablaShowcase = () => {
   const [products, setProducts] = useState([]);

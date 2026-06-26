@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 import './App.css';
 import TopBanner from './components/TopBanner/TopBanner';
 import Header from './components/Header/Header';
@@ -29,7 +29,16 @@ import CategoryPage from './pages/CategoryPage/CategoryPage';
 import OurStoresPage from './pages/OurStoresPage/OurStoresPage';
 import ProductPage from './pages/ProductPage/ProductPage';
 import { CartProvider } from './context/CartContext';
-import { useNavigate } from 'react-router-dom';
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
 
 // Simple wrapper for SignIn to handle navigation
 const SignInWrapper = () => {
@@ -43,10 +52,17 @@ const SignInWrapper = () => {
   );
 };
 
+// Wrapper for CategoryPage to force remount on category change
+const CategoryPageWrapper = () => {
+  const { categoryCode } = useParams();
+  return <CategoryPage key={categoryCode} />;
+};
+
 function App() {
   return (
     <CartProvider>
       <Router>
+        <ScrollToTop />
         <div className="App">
           <TopBanner />
           <Header />
@@ -75,7 +91,7 @@ function App() {
             <Route path="/order-success/:orderId" element={<OrderSuccessPage />} />
             <Route path="/order-details/:orderId" element={<OrderSuccessPage />} />
             <Route path="/product/:id" element={<ProductPage />} />
-            <Route path="/categories/:categoryCode" element={<CategoryPage />} />
+            <Route path="/categories/:categoryCode" element={<CategoryPageWrapper />} />
             <Route path="/stores" element={<OurStoresPage />} />
             <Route path="/login" element={<SignInWrapper />} />
             <Route path="/profile" element={<ProfilePage />} />

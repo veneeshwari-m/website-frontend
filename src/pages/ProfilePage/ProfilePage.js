@@ -9,27 +9,29 @@ const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://local
 const GET_ORDERS = gql`
   query GetOrder($search: String) {
     getOrder(search: $search) {
-      id
-      userId
-      orderNumber
-      subTotal
-      totalAmount
-      status
-      paymentMethod
-      deliveryAddress {
-        name
-        street
-        city
-        state
-        country
-        phone
-      }
-      createdAt
-      items {
-        name
-        image
-        price
-        quantity
+      orders {
+        id
+        userId
+        orderNumber
+        subTotal
+        totalAmount
+        status
+        paymentMethod
+        deliveryAddress {
+          name
+          street
+          city
+          state
+          country
+          phone
+        }
+        createdAt
+        items {
+          name
+          image
+          price
+          quantity
+        }
       }
     }
   }

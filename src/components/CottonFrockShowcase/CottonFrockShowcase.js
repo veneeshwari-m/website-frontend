@@ -8,15 +8,15 @@ const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://local
 
 const GET_PRODUCTS = gql`
   query GetProduct($search: String) {
-      }
-    getProduct(search: $search) {\n      products {
+    getProduct(search: $search) {
+      products {
       id
       name
       price
       images
     }
   }
-`;
+}`;
 
 const CottonFrockShowcase = () => {
   const [products, setProducts] = useState([]);
@@ -37,7 +37,7 @@ const CottonFrockShowcase = () => {
         // Fallback if search 'frock' returns nothing
         if (fetchedProducts.length === 0) {
             const allData = await client.request(GET_PRODUCTS, { search: '' });
-            fetchedProducts = allData.getProduct || [];
+            fetchedProducts = allData.getProduct?.products || [];
         }
 
         setProducts(fetchedProducts.slice(0, 5));

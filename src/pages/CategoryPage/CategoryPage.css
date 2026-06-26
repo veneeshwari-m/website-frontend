@@ -539,12 +539,14 @@
   aspect-ratio: 1 / 1.25;
   border-radius: 8px;
   margin-bottom: 15px;
+  background: #e0e0e0;
 }
 
 .shimmer-text {
   height: 15px;
   margin-bottom: 8px;
   border-radius: 4px;
+  background: #e0e0e0;
 }
 
 .shimmer-text.title {
@@ -560,6 +562,7 @@
   height: 38px;
   margin-top: 15px;
   border-radius: 0;
+  background: #e0e0e0;
 }
 
 /* Pagination */

@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { GraphQLClient, gql } from 'graphql-request';
 import './GirlsPage.css';
 import QuickViewModal from '../../components/QuickViewModal/QuickViewModal';
-import { FiRefreshCw, FiTruck, FiShield } from 'react-icons/fi';
 
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
 const GET_PRODUCTS_BY_CATEGORY = gql`
-  query GetProductsByCategoryCode($code: String!) {
-    getProductsByCategoryCode(code: $code) {
+  query GetProductsByCategoryCode($code: String!, $page: Int, $limit: Int) {
+    getProductsByCategoryCode(code: $code, page: $page, limit: $limit) {
+      products {
       id
       name
       price
@@ -25,6 +25,8 @@ const GET_PRODUCTS_BY_CATEGORY = gql`
         stock
       }
     }
+    totalCount
+    hasMore
   }
 `;
 
@@ -33,8 +35,13 @@ const GirlsPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const [hasScrolled, setHasScrolled] = useState(false);
   const itemsPerPage = 12;
+  const loadMoreRef = useRef(null);
   const [expandedFilters, setExpandedFilters] = useState({
     size: false,
     moreFilters: false,
@@ -52,21 +59,72 @@ const GirlsPage = () => {
 
   useEffect(() => {
     const fetchGirlsProducts = async () => {
-      setLoading(true);
+      if (page === 1) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+        // Add artificial delay so the refresh spinner is visible during scroll
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      }
       try {
         const client = new GraphQLClient(GRAPHQL_ENDPOINT);
-        const data = await client.request(GET_PRODUCTS_BY_CATEGORY, { code: 'GIRLS' });
-        setProducts(data.getProductsByCategoryCode || []);
+        const data = await client.request(GET_PRODUCTS_BY_CATEGORY, { 
+          code: 'GIRLS',
+          page: page,
+          limit: itemsPerPage
+        });
+        
+        const fetchedProducts = data.getProductsByCategoryCode?.products || [];
+        
+        if (page === 1) {
+          setProducts(fetchedProducts);
+        } else {
+          setProducts(prev => [...prev, ...fetchedProducts]);
+        }
+        
+        setHasMore(data.getProductsByCategoryCode?.hasMore || false);
+        setTotalCount(data.getProductsByCategoryCode?.totalCount || 0);
+        
       } catch (err) {
         console.error('Error fetching girls products:', err);
       } finally {
         setLoading(false);
+        setLoadingMore(false);
       }
     };
 
     fetchGirlsProducts();
-    window.scrollTo(0, 0);
+  }, [page]);
+
+  // Detect first user scroll to prevent instant loading on very large monitors
+  useEffect(() => {
+    window.scrollTo(0, 0); // Reset scroll position when page loads/reloads
+    const handleInitialScroll = () => {
+      setHasScrolled(true);
+      window.removeEventListener('scroll', handleInitialScroll);
+    };
+    window.addEventListener('scroll', handleInitialScroll);
+    return () => window.removeEventListener('scroll', handleInitialScroll);
   }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore && !loadingMore && hasScrolled) {
+        setPage((prev) => prev + 1);
+      }
+    }, { rootMargin: '0px' });
+
+    const currentRef = loadMoreRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [hasMore, loadingMore, hasScrolled]);
 
   const openQuickView = (product) => {
     setSelectedProduct({
@@ -76,33 +134,20 @@ const GirlsPage = () => {
     });
   };
 
- 
-  const indexOfLastProduct = currentPage * itemsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
-  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
-  const totalPages = Math.ceil(products.length / itemsPerPage);
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-    window.scrollTo(0, 0);
-  };
-
   return (
     <div className="category-page-container">
-      
 
       <div className="category-breadcrumbs">
         <Link to="/">Home</Link> - Best sellers_Girls
       </div>
 
- 
       <h1 className="category-page-title">Best sellers_Girls</h1>
 
       <div className="category-main-layout">
 
         <aside className="category-sidebar">
           <div className="filter-accordion">
-            
+
             <div className={`filter-group ${expandedFilters.size ? 'expanded' : ''}`}>
               <div className="filter-header" onClick={() => toggleFilter('size')}>
                 <span>Size</span>
@@ -129,10 +174,10 @@ const GirlsPage = () => {
               {expandedFilters.colour && (
                 <div className="filter-content">
                   <div className="filter-colors-grid">
-                    <div className="color-swatch-wrapper"><div className="color-swatch" style={{backgroundColor: 'black'}}></div></div>
-                    <div className="color-swatch-wrapper selected"><div className="color-swatch" style={{backgroundColor: 'blue'}}></div></div>
-                    <div className="color-swatch-wrapper"><div className="color-swatch" style={{backgroundColor: 'red'}}></div></div>
-                    <div className="color-swatch-wrapper"><div className="color-swatch" style={{backgroundColor: 'pink'}}></div></div>
+                    <div className="color-swatch-wrapper"><div className="color-swatch" style={{ backgroundColor: 'black' }}></div></div>
+                    <div className="color-swatch-wrapper selected"><div className="color-swatch" style={{ backgroundColor: 'blue' }}></div></div>
+                    <div className="color-swatch-wrapper"><div className="color-swatch" style={{ backgroundColor: 'red' }}></div></div>
+                    <div className="color-swatch-wrapper"><div className="color-swatch" style={{ backgroundColor: 'pink' }}></div></div>
                   </div>
                 </div>
               )}
@@ -165,10 +210,8 @@ const GirlsPage = () => {
           </div>
         </aside>
 
-   
         <div className="category-content">
-          
-       
+
           <div className="category-top-bar">
             <div className="results-count">
               There are {products.length} results in total
@@ -184,30 +227,29 @@ const GirlsPage = () => {
             </div>
           </div>
 
-
           <div className="category-product-grid">
             {loading ? (
               <div className="category-loading">
                 <div className="spinner"></div>
                 <p>Loading collection...</p>
               </div>
-            ) : currentProducts.length > 0 ? (
-              currentProducts.map((product) => (
+            ) : products.length > 0 ? (
+              products.map((product) => (
                 <div className="category-card" key={product.id}>
-                  <div 
+                  <div
                     className="category-image-wrapper"
                     onClick={() => navigate(`/product/${product.id}`)}
                     style={{ cursor: 'pointer' }}
                   >
-                    <img 
-                      src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'} 
-                      alt={product.name} 
-                      className="category-image" 
+                    <img
+                      src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'}
+                      alt={product.name}
+                      className="category-image"
                     />
                   </div>
                   <div className="category-info">
-                    <h3 
-                      className="category-name" 
+                    <h3
+                      className="category-name"
                       title={product.name}
                       onClick={() => navigate(`/product/${product.id}`)}
                       style={{ cursor: 'pointer' }}
@@ -229,41 +271,60 @@ const GirlsPage = () => {
                 <button className="continue-shopping-btn" onClick={() => navigate('/')}>Continue Shopping</button>
               </div>
             )}
-          </div>
 
-    
-          {!loading && products.length > itemsPerPage && (
-            <div className="girls-pagination">
-              <button 
-                className="pagination-arrow" 
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                ← Previous
-              </button>
-              <div className="pagination-numbers">
-                {[...Array(totalPages)].map((_, i) => (
-                  <button 
-                    key={i} 
-                    className={`pagination-number ${currentPage === i + 1 ? 'active' : ''}`}
-                    onClick={() => handlePageChange(i + 1)}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
+            {loadingMore && [...Array(4)].map((_, index) => (
+              <div className="category-card shimmer-card" key={`shimmer-${index}`}>
+                <div className="shimmer-image"></div>
+                <div className="category-info" style={{ width: '100%' }}>
+                  <div className="shimmer-text title"></div>
+                  <div className="shimmer-text price"></div>
+                  <div className="shimmer-button"></div>
+                </div>
               </div>
-              <button 
-                className="pagination-arrow" 
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                Next →
-              </button>
-            </div>
-          )}
+            ))}
 
-    
-          
+            {/* Loading Indicator matching Prince & Princess style */}
+            {(!loading || page > 1) && products.length > 0 && (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '30px 0', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <p style={{ color: '#555', fontSize: '14px', marginBottom: '10px' }}>
+                  You've viewed {Math.min(products.length, totalCount)} of {totalCount} result{totalCount !== 1 ? 's' : ''}
+                </p>
+                <div style={{ width: '250px', height: '2px', backgroundColor: '#e0e0e0', marginBottom: '25px', position: 'relative' }}>
+                  <div style={{ position: 'absolute', top: 0, left: 0, height: '100%', backgroundColor: '#1a365d', width: `${Math.min(100, (products.length / (totalCount || 1)) * 100)}%`, transition: 'width 0.3s ease' }}></div>
+                </div>
+                
+                {hasMore && (
+                  <button 
+                    style={{
+                      width: '180px',
+                      height: '50px',
+                      backgroundColor: '#1a365d',
+                      color: '#fff',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      border: 'none',
+                      fontSize: '14px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px',
+                      cursor: loadingMore ? 'default' : 'pointer'
+                    }}
+                    onClick={() => !loadingMore && setPage(prev => prev + 1)}
+                    disabled={loadingMore}
+                  >
+                    {loadingMore ? (
+                      <div className="spinner" style={{ width: '20px', height: '20px', borderWidth: '2px', borderTopColor: 'transparent', borderColor: 'rgba(255,255,255,0.3)', borderTop: '2px solid #fff', margin: 0 }}></div>
+                    ) : (
+                      "Load More"
+                    )}
+                  </button>
+                )}
+              </div>
+            )}
+            
+            {/* Invisible div for IntersectionObserver, kept outside condition to ensure ref is attached */}
+            <div ref={loadMoreRef} style={{ height: '20px', width: '100%' }}></div>
+          </div>
 
         </div>
       </div>
@@ -272,5 +333,6 @@ const GirlsPage = () => {
     </div>
   );
 };
+
 
 export default GirlsPage;

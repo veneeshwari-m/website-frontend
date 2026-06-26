@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { GraphQLClient, gql } from 'graphql-request';
 import './CategoryPage.css';
@@ -7,8 +7,8 @@ import QuickViewModal from '../../components/QuickViewModal/QuickViewModal';
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
 const GET_PRODUCTS_BY_CATEGORY = gql`
-  query GetProductsByCategoryCode($code: String!, $sort: String, $filters: ProductFilterInput) {
-    getProductsByCategoryCode(code: $code, sort: $sort, filters: $filters) {
+  query GetProductsByCategoryCode($code: String!, $sort: String, $filters: ProductFilterInput, $page: Int, $limit: Int) {
+    getProductsByCategoryCode(code: $code, sort: $sort, filters: $filters, page: $page, limit: $limit) {
       products {
         id
         name
@@ -36,6 +36,8 @@ const GET_PRODUCTS_BY_CATEGORY = gql`
         createdAt
         updatedAt
       }
+      totalCount
+      hasMore
       filters {
         sizes { name count }
         colors { name count }
@@ -57,6 +59,13 @@ const CategoryPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [sort, setSort] = useState('features');
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const [hasScrolled, setHasScrolled] = useState(false);
+  const itemsPerPage = 12;
+  const loadMoreRef = useRef(null);
 
   // Active filters state
   const [activeFilters, setActiveFilters] = useState({
@@ -104,13 +113,21 @@ const CategoryPage = () => {
   }, [filterData.price.max]);
 
   useEffect(() => {
-    const fetchCategoryProducts = async () => {
-      setLoading(true);
+    const fetchCategoryProducts = async (isNewQuery = false) => {
+      if (page === 1) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+        // Add artificial delay so the refresh spinner is visible during scroll
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      }
       try {
         const client = new GraphQLClient(GRAPHQL_ENDPOINT);
         const data = await client.request(GET_PRODUCTS_BY_CATEGORY, { 
           code: categoryCode, 
           sort: sort,
+          page: page,
+          limit: itemsPerPage,
           filters: {
             sizes: activeFilters.sizes.length > 0 ? activeFilters.sizes : null,
             brands: activeFilters.brands.length > 0 ? activeFilters.brands : null,
@@ -120,26 +137,59 @@ const CategoryPage = () => {
           }
         });
         if (data.getProductsByCategoryCode) {
-          setProducts(data.getProductsByCategoryCode.products || []);
+          const newProducts = data.getProductsByCategoryCode.products || [];
+          setProducts(prev => isNewQuery ? newProducts : [...prev, ...newProducts]);
+          setHasMore(data.getProductsByCategoryCode.hasMore);
+          setTotalCount(data.getProductsByCategoryCode.totalCount || 0);
           if (data.getProductsByCategoryCode.filters) {
-            // Only update filterData if it's the initial load to prevent shrinking options
-            setFilterData(prev => prev.sizes.length > 0 ? prev : data.getProductsByCategoryCode.filters);
+            setFilterData(prev => prev.sizes.length > 0 && !isNewQuery ? prev : data.getProductsByCategoryCode.filters);
           }
         } else {
           setProducts([]);
+          setTotalCount(0);
         }
       } catch (err) {
         console.error('Error fetching category products:', err);
       } finally {
         setLoading(false);
+        setLoadingMore(false);
       }
     };
 
     if (categoryCode) {
-      fetchCategoryProducts();
+      fetchCategoryProducts(page === 1);
     }
-    window.scrollTo(0, 0);
-  }, [categoryCode, sort, activeFilters]);
+  }, [categoryCode, sort, activeFilters, page]);
+
+  // Detect first user scroll to prevent instant loading on very large monitors
+  useEffect(() => {
+    window.scrollTo(0, 0); // Reset scroll position when page loads/reloads
+    const handleInitialScroll = () => {
+      setHasScrolled(true);
+      window.removeEventListener('scroll', handleInitialScroll);
+    };
+    window.addEventListener('scroll', handleInitialScroll);
+    return () => window.removeEventListener('scroll', handleInitialScroll);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore && !loadingMore && hasScrolled) {
+        setPage((prev) => prev + 1);
+      }
+    }, { rootMargin: '0px' });
+
+    const currentRef = loadMoreRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [hasMore, loadingMore, hasScrolled]);
 
   const openQuickView = (product) => {
     setSelectedProduct({
@@ -317,7 +367,7 @@ const CategoryPage = () => {
             </div>
             <div className="sort-by-wrapper">
               <span>Sort by:</span>
-              <select className="sort-by-select" value={sort} onChange={(e) => setSort(e.target.value)}>
+              <select className="sort-by-select" value={sort} onChange={(e) => {setSort(e.target.value); setPage(1);}}>
                 <option value="features">Features</option>
                 <option value="most-relevant">Most relevant</option>
                 <option value="bestselling">Best selling</option>
@@ -331,7 +381,7 @@ const CategoryPage = () => {
 
           {/* Product Grid */}
           <div className="category-product-grid">
-            {loading ? (
+            {loading && page === 1 ? (
               <div className="category-loading">
                 <div className="spinner"></div>
                 <p>Loading collection...</p>
@@ -374,6 +424,61 @@ const CategoryPage = () => {
                 <button className="continue-shopping-btn" onClick={() => navigate('/')}>Continue Shopping</button>
               </div>
             )}
+
+            {/* Shimmer loading for next pages */}
+            {loadingMore && [...Array(4)].map((_, index) => (
+              <div className="category-card shimmer-card" key={`shimmer-${index}`}>
+                <div className="shimmer-image"></div>
+                <div className="category-info" style={{width: '100%'}}>
+                  <div className="shimmer-text title"></div>
+                  <div className="shimmer-text price"></div>
+                  <div className="shimmer-button"></div>
+                </div>
+              </div>
+            ))}
+            
+            {/* Loading Indicator matching Prince & Princess style */}
+            {(!loading || page > 1) && products.length > 0 && (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '30px 0', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <p style={{ color: '#555', fontSize: '14px', marginBottom: '10px' }}>
+                  You've viewed {Math.min(products.length, totalCount)} of {totalCount} result{totalCount !== 1 ? 's' : ''}
+                </p>
+                <div style={{ width: '250px', height: '2px', backgroundColor: '#e0e0e0', marginBottom: '25px', position: 'relative' }}>
+                  <div style={{ position: 'absolute', top: 0, left: 0, height: '100%', backgroundColor: '#1a365d', width: `${Math.min(100, (products.length / (totalCount || 1)) * 100)}%`, transition: 'width 0.3s ease' }}></div>
+                </div>
+                
+                {hasMore && (
+                  <button 
+                    style={{
+                      width: '180px',
+                      height: '50px',
+                      backgroundColor: '#1a365d',
+                      color: '#fff',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      border: 'none',
+                      fontSize: '14px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px',
+                      cursor: loadingMore ? 'default' : 'pointer'
+                    }}
+                    onClick={() => !loadingMore && setPage(prev => prev + 1)}
+                    disabled={loadingMore}
+                  >
+                    {loadingMore ? (
+                      <div className="spinner" style={{ width: '20px', height: '20px', borderWidth: '2px', borderTopColor: 'transparent', borderColor: 'rgba(255,255,255,0.3)', borderTop: '2px solid #fff', margin: 0 }}></div>
+                    ) : (
+                      "Load More"
+                    )}
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Invisible div for IntersectionObserver, kept outside condition to ensure ref is attached */}
+            <div ref={loadMoreRef} style={{ height: '20px', width: '100%' }}></div>
+
           </div>
 
         </div>
