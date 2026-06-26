@@ -7,8 +7,8 @@ import QuickViewModal from '../../components/QuickViewModal/QuickViewModal';
 const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:2000/graphql';
 
 const GET_PRODUCTS_BY_CATEGORY = gql`
-  query GetProductsByCategoryCode($code: String!, $sort: String) {
-    getProductsByCategoryCode(code: $code, sort: $sort) {
+  query GetProductsByCategoryCode($code: String!, $sort: String, $filters: ProductFilterInput) {
+    getProductsByCategoryCode(code: $code, sort: $sort, filters: $filters) {
       products {
         id
         name
@@ -108,11 +108,22 @@ const CategoryPage = () => {
       setLoading(true);
       try {
         const client = new GraphQLClient(GRAPHQL_ENDPOINT);
-        const data = await client.request(GET_PRODUCTS_BY_CATEGORY, { code: categoryCode, sort: sort });
+        const data = await client.request(GET_PRODUCTS_BY_CATEGORY, { 
+          code: categoryCode, 
+          sort: sort,
+          filters: {
+            sizes: activeFilters.sizes.length > 0 ? activeFilters.sizes : null,
+            brands: activeFilters.brands.length > 0 ? activeFilters.brands : null,
+            colors: activeFilters.colors.length > 0 ? activeFilters.colors : null,
+            stock: activeFilters.stock.length > 0 ? activeFilters.stock : null,
+            price: (activeFilters.price.min > 0 || activeFilters.price.max > 0) ? activeFilters.price : null
+          }
+        });
         if (data.getProductsByCategoryCode) {
           setProducts(data.getProductsByCategoryCode.products || []);
           if (data.getProductsByCategoryCode.filters) {
-            setFilterData(data.getProductsByCategoryCode.filters);
+            // Only update filterData if it's the initial load to prevent shrinking options
+            setFilterData(prev => prev.sizes.length > 0 ? prev : data.getProductsByCategoryCode.filters);
           }
         } else {
           setProducts([]);
@@ -128,7 +139,7 @@ const CategoryPage = () => {
       fetchCategoryProducts();
     }
     window.scrollTo(0, 0);
-  }, [categoryCode, sort]);
+  }, [categoryCode, sort, activeFilters]);
 
   const openQuickView = (product) => {
     setSelectedProduct({
@@ -140,38 +151,7 @@ const CategoryPage = () => {
 
   const formattedCategoryName = categoryCode ? categoryCode.charAt(0).toUpperCase() + categoryCode.slice(1).toLowerCase() : '';
 
-  const filteredProducts = products.filter(p => {
-    // Size filter
-    if (activeFilters.sizes.length > 0) {
-      const hasSize = p.variants?.some(v => activeFilters.sizes.includes(v.size));
-      if (!hasSize) return false;
-    }
-
-    // Brand / More filters
-    if (activeFilters.brands.length > 0) {
-      if (!activeFilters.brands.includes(p.brand)) return false;
-    }
-
-    // Color filter
-    if (activeFilters.colors.length > 0) {
-      const hasColor = p.variants?.some(v => activeFilters.colors.includes(v.color));
-      if (!hasColor) return false;
-    }
-
-    // Stock filter
-    if (activeFilters.stock.length > 0) {
-      const hasStock = p.variants?.some(v => v.stock > 0);
-      const stockStatus = hasStock ? 'In stock' : 'Out of stock';
-      if (!activeFilters.stock.includes(stockStatus)) return false;
-    }
-
-    // Price filter
-    if (p.price < activeFilters.price.min || p.price > activeFilters.price.max) {
-      return false;
-    }
-
-    return true;
-  });
+  const filteredProducts = products;
 
   return (
     <div className="category-page-container">

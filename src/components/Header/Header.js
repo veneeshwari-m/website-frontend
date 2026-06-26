@@ -12,24 +12,26 @@ const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://local
 const GET_PRODUCT_CATEGORIES = gql`
   query GetProductCategories($search: String) {
     getProductCategories(search: $search) {
-      id
-      name
-      code
-      description
-      imageUrl
-      status
-      parentCategoryId
-      subCategories {
+      categories {
         id
         name
         code
-        productCategoryId
         description
         imageUrl
         status
+        parentCategoryId
+        subCategories {
+          id
+          name
+          code
+          productCategoryId
+          description
+          imageUrl
+          status
+          createdTime
+        }
         createdTime
       }
-      createdTime
     }
   }
 `;
@@ -47,7 +49,7 @@ const Header = () => {
         const client = new GraphQLClient(GRAPHQL_ENDPOINT);
         const data = await client.request(GET_PRODUCT_CATEGORIES);
        
-        const parentCategories = (data.getProductCategories || []).filter(
+        const parentCategories = (data.getProductCategories?.categories || []).filter(
           cat => !cat.parentCategoryId
         );
         setCategories(parentCategories);

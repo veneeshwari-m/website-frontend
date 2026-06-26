@@ -8,7 +8,8 @@ const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://local
 
 const GET_PRODUCTS = gql`
   query GetProduct($search: String) {
-    getProduct(search: $search) {
+      }
+    getProduct(search: $search) {\n      products {
       id
       name
       price
@@ -31,7 +32,7 @@ const CottonFrockShowcase = () => {
         // We can search for frock to get relevant products
         const data = await client.request(GET_PRODUCTS, { search: 'frock' });
         
-        let fetchedProducts = data.getProduct ? data.getProduct : [];
+        let fetchedProducts = data.getProduct?.products ? data.getProduct?.products : [];
         
         // Fallback if search 'frock' returns nothing
         if (fetchedProducts.length === 0) {

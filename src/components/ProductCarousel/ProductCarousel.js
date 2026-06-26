@@ -9,7 +9,8 @@ const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://local
 
 const GET_PRODUCTS = gql`
   query GetProduct($search: String) {
-    getProduct(search: $search) {
+      }
+    getProduct(search: $search) {\n      products {
       id
       name
       price
@@ -108,7 +109,7 @@ const ProductCarousel = () => {
       try {
         const client = new GraphQLClient(GRAPHQL_ENDPOINT);
         const data = await client.request(GET_PRODUCTS, { search: '' });
-        const fetchedProducts = data.getProduct ? data.getProduct : [];
+        const fetchedProducts = data.getProduct?.products ? data.getProduct?.products : [];
         setProducts(fetchedProducts);
       } catch (err) {
         console.error('Error fetching products:', err);

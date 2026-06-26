@@ -25,7 +25,7 @@ import SignIn from './pages/signIn.js/signIn';
 import ProfilePage from './pages/ProfilePage/ProfilePage';
 import OrderSuccessPage from './pages/OrderSuccessPage/OrderSuccessPage';
 import CategoryPage from './pages/CategoryPage/CategoryPage';
-import GirlsPage from './pages/GirlsPage/GirlsPage';
+
 import OurStoresPage from './pages/OurStoresPage/OurStoresPage';
 import ProductPage from './pages/ProductPage/ProductPage';
 import { CartProvider } from './context/CartContext';
@@ -75,7 +75,6 @@ function App() {
             <Route path="/order-success/:orderId" element={<OrderSuccessPage />} />
             <Route path="/order-details/:orderId" element={<OrderSuccessPage />} />
             <Route path="/product/:id" element={<ProductPage />} />
-            <Route path="/categories/GIRLS" element={<GirlsPage />} />
             <Route path="/categories/:categoryCode" element={<CategoryPage />} />
             <Route path="/stores" element={<OurStoresPage />} />
             <Route path="/login" element={<SignInWrapper />} />

@@ -46,7 +46,8 @@
   flex-shrink: 0;
   border: none;
   padding: 20px;
-  background-color: #fcfaf6; /* Light cream background matching image */
+  background-color: #fcfaf6;
+  /* Light cream background matching image */
 }
 
 .filter-accordion {
@@ -55,8 +56,9 @@
 }
 
 .filter-group {
-  border-bottom: 1px solid #0c2b5e; /* Dark blue border for group */
-  margin: 0; 
+  border-bottom: 1px solid #0c2b5e;
+  /* Dark blue border for group */
+  margin: 0;
 }
 
 .filter-group:last-child {
@@ -69,7 +71,8 @@
   align-items: center;
   padding: 20px 0 15px 0;
   cursor: pointer;
-  font-family: Georgia, 'Times New Roman', Times, serif; /* Elegant serif font */
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  /* Elegant serif font */
   font-size: 18px;
   color: #333;
   font-weight: normal;
@@ -88,7 +91,8 @@
 
 .filter-content {
   padding: 0 0 20px 0;
-  font-size: 15px; /* Match screenshot font size */
+  font-size: 15px;
+  /* Match screenshot font size */
   color: #444;
   font-family: 'Inter', sans-serif;
 }
@@ -107,12 +111,14 @@
 .filter-checkbox-list::-webkit-scrollbar {
   width: 5px;
 }
+
 .filter-checkbox-list::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #f1f1f1;
   border-radius: 10px;
 }
+
 .filter-checkbox-list::-webkit-scrollbar-thumb {
-  background: #ccc; 
+  background: #ccc;
   border-radius: 10px;
 }
 
@@ -129,7 +135,8 @@
   -webkit-appearance: none;
   width: 18px;
   height: 18px;
-  border: 1px solid #0c2b5e; /* Dark blue border */
+  border: 1px solid #0c2b5e;
+  /* Dark blue border */
   border-radius: 2px;
   cursor: pointer;
   position: relative;
@@ -194,11 +201,13 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 1px solid #ddd; /* Added light border so all colors show */
+  border: 1px solid #ddd;
+  /* Added light border so all colors show */
 }
 
 .color-swatch-wrapper.selected {
-  border-color: #0c2b5e; /* Dark blue outline when selected */
+  border-color: #0c2b5e;
+  /* Dark blue outline when selected */
   box-shadow: 0 0 3px rgba(12, 43, 94, 0.5);
 }
 
@@ -238,7 +247,8 @@
   margin: 15px 5px;
 }
 
-.price-slider-line::before, .price-slider-line::after {
+.price-slider-line::before,
+.price-slider-line::after {
   content: '';
   position: absolute;
   top: -4px;
@@ -309,7 +319,7 @@
   background-position: right 12px center;
   background-size: 10px auto;
   transition: all 0.3s ease;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .sort-by-select:hover {
@@ -429,7 +439,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .category-empty-state {
@@ -438,7 +450,7 @@
   padding: 80px 20px;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
 .empty-icon {
@@ -479,7 +491,7 @@
   .category-main-layout {
     flex-direction: column;
   }
-  
+
   .category-sidebar {
     width: 100%;
   }
@@ -499,3 +511,90 @@
 }
 
 
+/* Shimmer Effect */
+.shimmer-card {
+  background: #f6f7f8;
+  background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+  background-repeat: no-repeat;
+  background-size: 800px 100%;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeholderShimmer;
+  animation-timing-function: linear;
+}
+
+@keyframes placeholderShimmer {
+  0% {
+    background-position: -468px 0;
+  }
+
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.shimmer-image {
+  width: 100%;
+  aspect-ratio: 1 / 1.25;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.shimmer-text {
+  height: 15px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+.shimmer-text.title {
+  width: 80%;
+}
+
+.shimmer-text.price {
+  width: 50%;
+}
+
+.shimmer-button {
+  width: 100%;
+  height: 38px;
+  margin-top: 15px;
+  border-radius: 0;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  grid-column: 1 / -1;
+}
+
+.pagination-btn {
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  background-color: white;
+  color: #333;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #f5f5f5;
+  border-color: #ccc;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-btn.active {
+  background-color: #0c2b5e;
+  color: white;
+  border-color: #0c2b5e;
+}

@@ -9,19 +9,21 @@ const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://local
 const GET_ORDERS = gql`
   query GetOrder($search: String) {
     getOrder(search: $search) {
-      id
-      userId
-      orderNumber
-      subTotal
-      totalAmount
-      status
-      paymentMethod
-      createdAt
-      items {
-        name
-        image
-        price
-        quantity
+      orders {
+        id
+        userId
+        orderNumber
+        subTotal
+        totalAmount
+        status
+        paymentMethod
+        createdAt
+        items {
+          name
+          image
+          price
+          quantity
+        }
       }
     }
   }
@@ -130,7 +132,7 @@ const ProfilePage = () => {
         const currentUserId = user.id || user._id;
         const data = await client.request(GET_ORDERS, { search: currentUserId });
 
-        const allOrders = data.getOrder || [];
+        const allOrders = data.getOrder?.orders || [];
         const userOrders = allOrders.filter(order => order.userId === currentUserId);
 
         userOrders.sort((a, b) => parseInt(b.createdAt) - parseInt(a.createdAt));
