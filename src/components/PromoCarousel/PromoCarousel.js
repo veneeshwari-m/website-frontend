@@ -11,21 +11,21 @@ const GET_PRODUCTS = gql`
     getProduct(search: $search) {
       products {
         id
-      name
-      price
-      mrp
-      discountPercentage
-      images
-      brand
-      variants {
-        color
-        size
-        stock
+        name
+        price
+        mrp
+        discountPercentage
+        images
+        brand
+        variants {
+          color
+          size
+          stock
+        }
+        description
       }
-      description
     }
-  }
-}`;
+  }`;
 
 const PromoCarousel = () => {
   const [products, setProducts] = useState([]);

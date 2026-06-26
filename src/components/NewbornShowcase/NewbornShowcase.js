@@ -10,13 +10,14 @@ const GET_PRODUCTS = gql`
   query GetProduct($search: String) {
     getProduct(search: $search) {
       products {
-      id
-      name
-      price
-      images
+        id
+        name
+        price
+        images
+      }
     }
   }
-}`;
+`;
 
 const NewbornShowcase = () => {
   const [products, setProducts] = useState([]);
