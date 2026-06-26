@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiSearch, FiUser, FiShoppingBag } from 'react-icons/fi';
+import { FiSearch, FiUser, FiShoppingBag, FiMenu, FiX } from 'react-icons/fi';
 import './Header.css';
 import { GraphQLClient, gql } from 'graphql-request';
 import { useCart } from '../../context/CartContext';
@@ -42,6 +42,7 @@ const Header = () => {
   const cartCount = getCartCount();
   const navigate = useNavigate();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -64,19 +65,22 @@ const Header = () => {
   return (
     <header className="site-header">
       <div className="header-container">
+        <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+          {isMobileMenuOpen ? <FiX /> : <FiMenu />}
+        </button>
      
         <div className="header-logo">
           <img src="/images/log1.png" alt="Prince 'N' Princess" className="logo-image" />
         </div>
 
-        <nav className="header-nav">
+        <nav className={`header-nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
           <ul className="nav-list">
             <li className="nav-item">
-              <NavLink to="/" end>Home</NavLink>
+              <NavLink to="/" end onClick={() => setIsMobileMenuOpen(false)}>Home</NavLink>
             </li>
             {categories.map((category) => (
               <li className="nav-item" key={category.id}>
-                <NavLink to={`/categories/${category.code}`}>
+                <NavLink to={`/categories/${category.code}`} onClick={() => setIsMobileMenuOpen(false)}>
                   {category.name}
                   {category.subCategories && category.subCategories.length > 0 && (
                     <MdKeyboardArrowDown className="nav-arrow" />
@@ -85,10 +89,10 @@ const Header = () => {
               </li>
             ))}
             <li className="nav-item">
-              <NavLink to="/stores">Our Stores</NavLink>
+              <NavLink to="/stores" onClick={() => setIsMobileMenuOpen(false)}>Our Stores</NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/blog">Blog</NavLink>
+              <NavLink to="/blog" onClick={() => setIsMobileMenuOpen(false)}>Blog</NavLink>
             </li>
           </ul>
         </nav>

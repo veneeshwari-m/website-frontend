@@ -134,6 +134,15 @@
   font-family: sans-serif;
 }
 
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+}
+
 /* Responsive adjustments */
 @media (max-width: 1024px) {
   .nav-list {
@@ -145,10 +154,39 @@
 }
 
 @media (max-width: 768px) {
-  .header-nav {
-    display: none; /* Hide desktop nav on mobile, would need a hamburger menu */
+  .mobile-menu-btn {
+    display: block;
   }
+  
+  .header-nav {
+    display: none; 
+    position: absolute;
+    top: 80px;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    flex-direction: column;
+    padding: 20px 0;
+    z-index: 1000;
+  }
+  
+  .header-nav.mobile-open {
+    display: flex;
+  }
+  
+  .nav-list {
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+  }
+
   .header-container {
     padding: 10px 20px;
+  }
+  
+  .header-logo {
+    flex-grow: 1;
+    justify-content: center;
   }
 }

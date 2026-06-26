@@ -319,41 +319,37 @@ const ProfilePage = () => {
                         </span>
                         <span className={`order-status ${order.status?.toLowerCase()}`}>{order.status}</span>
                       </div>
-                      <div className="order-body" style={{ display: 'grid', gridTemplateColumns: '2fr 1.5fr 1fr', rowGap: '15px', marginTop: '15px' }}>
-                        {/* Address Column - Spans all rows */}
-                        <div style={{ gridColumn: '2', gridRow: `1 / span ${Math.max(1, order.items ? order.items.length : 1)}`, padding: '0 15px', borderLeft: '1px solid #eee', borderRight: '1px solid #eee' }}>
+                      <div className="order-body">
+                        {/* Items and Prices */}
+                        <div className="order-items-column">
+                          {order.items && order.items.map((item, idx) => (
+                            <div className="order-item-row" key={idx}>
+                              <div className="order-item-image-wrapper">
+                                <img src={item.image} alt={item.name} onError={(e) => { e.target.src = "https://placehold.co/60x60/e8e8e8/8a2b8f?text=Item" }} />
+                                <div className="order-item-details">
+                                  <h4>{item.name}</h4>
+                                  <p>Qty: {item.quantity}</p>
+                                </div>
+                              </div>
+                              <div className="order-item-price">
+                                Rs. {item.price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Address Column */}
+                        <div className="order-address-column">
                           {order.deliveryAddress && (
                             <div className="order-address-info">
-                              <h5 style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#777', textTransform: 'uppercase' }}>Delivery Address</h5>
-                              <p style={{ margin: 0, fontSize: '14px', color: '#333' }}><strong>{order.deliveryAddress.name}</strong></p>
-                              <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#555' }}>
-                                {order.deliveryAddress.street}, {order.deliveryAddress.city}
-                              </p>
-                              <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#555' }}>
-                                {order.deliveryAddress.state}, {order.deliveryAddress.country}
-                              </p>
-                              <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#555' }}>
-                                Phone: {order.deliveryAddress.phone}
-                              </p>
+                              <h5>Delivery Address</h5>
+                              <p><strong>{order.deliveryAddress.name}</strong></p>
+                              <p>{order.deliveryAddress.street}, {order.deliveryAddress.city}</p>
+                              <p>{order.deliveryAddress.state}, {order.deliveryAddress.country}</p>
+                              <p>Phone: {order.deliveryAddress.phone}</p>
                             </div>
                           )}
                         </div>
-
-                        {/* Items and Prices */}
-                        {order.items && order.items.map((item, idx) => (
-                          <React.Fragment key={idx}>
-                            <div style={{ gridColumn: '1', display: 'flex', alignItems: 'center' }}>
-                              <img src={item.image} alt={item.name} style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px', marginRight: '15px' }} onError={(e) => { e.target.src = "https://placehold.co/60x60/e8e8e8/8a2b8f?text=Item" }} />
-                              <div className="order-item-details">
-                                <h4 style={{ margin: '0 0 5px 0', fontSize: '14px' }}>{item.name}</h4>
-                                <p style={{ margin: 0, fontSize: '12px', color: '#666' }}>Qty: {item.quantity}</p>
-                              </div>
-                            </div>
-                            <div style={{ gridColumn: '3', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', fontWeight: 'bold' }}>
-                              Rs. {item.price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                            </div>
-                          </React.Fragment>
-                        ))}
                       </div>
 
                       <div className="order-footer">
