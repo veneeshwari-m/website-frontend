@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { GraphQLClient, gql } from 'graphql-request';
 import './TopBanner.css';
 import { FaLessThan, FaGreaterThan } from "react-icons/fa";
@@ -36,9 +36,9 @@ const TopBanner = () => {
     fetchBanners();
   }, []);
 
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     setCurrentIndex((prevIndex) => messages.length > 0 ? (prevIndex + 1) % messages.length : 0);
-  };
+  }, [messages.length]);
 
   const prevSlide = () => {
     setCurrentIndex((prevIndex) => messages.length > 0 ? (prevIndex - 1 + messages.length) % messages.length : 0);
@@ -50,7 +50,7 @@ const TopBanner = () => {
       nextSlide();
     }, 4000);
     return () => clearInterval(timer);
-  }, [messages.length]); // depend on messages.length to reset interval if messages load
+  }, [messages.length, nextSlide]); // depend on messages.length to reset interval if messages load
 
   if (messages.length === 0) return null;
 
