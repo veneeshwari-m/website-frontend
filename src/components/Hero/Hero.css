@@ -10,128 +10,13 @@
   width: 100%;
   max-width: 1920px;
   position: relative;
-  /* Set height logic as requested */
-  height: 650px;
   overflow: hidden;
 }
 
 .hero-image {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-
-/* HTML Content Overlay Styles */
-.hero-content-overlay {
-  position: absolute;
-  top: 50%;
-  left: 10%;
-  transform: translateY(-50%);
-  text-align: center;
-  color: #5c3516;
-  /* Dark brown/gold color based on the screenshot */
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.hero-side-image-container {
-  position: absolute;
-  right: 9.5%;
-  bottom: 0;
-  height: 95%; /* Make it almost full height */
-  max-width: 45%;
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  z-index: 5;
-}
-
-.hero-side-image {
-  max-height: 100%;
-  max-width: 100%;
-  object-fit: contain;
-  object-position: bottom right;
-}
-
-.hero-subtitle {
-  font-size: 32px;
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: 500;
-  margin-bottom: -10px;
-}
-
-.hero-title {
-  font-size: 90px;
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: 600;
-  color: #9c6e26;
-  /* Gold-like color */
-  margin: 0;
-  text-transform: capitalize;
-  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
-}
-
-.hero-desc {
-  font-size: 18px;
-  font-weight: 500;
-  margin-top: 10px;
-  margin-bottom: 30px;
-  font-family: sans-serif;
-  color: #5c3516;
-}
-
-/* Styled Visible Button */
-.hero-shop-now-btn-visible {
-  background: linear-gradient(180deg, #fcebb6 0%, #d89f3c 100%);
-  color: #5c3516;
-  border: 1px solid #c99332;
-  padding: 12px 35px;
-  font-size: 16px;
-  font-weight: bold;
-  border-radius: 30px;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-  font-family: 'Times New Roman', Times, serif;
-}
-
-.hero-shop-now-btn-visible:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-@media (max-width: 1024px) {
-  .hero-container {
-    height: 400px;
-  }
-
-  .hero-subtitle {
-    font-size: 24px;
-  }
-
-  .hero-title {
-    font-size: 60px;
-  }
-
-  .hero-desc {
-    font-size: 16px;
-  }
-}
-
-@media (max-width: 768px) {
-  .hero-container {
-    height: 350px;
-    /* Increased slightly for mobile content */
-  }
-
-  .hero-content-overlay {
-    left: 5%;
-    transform: translateY(-50%) scale(0.8);
-    transform-origin: left center;
-  }
+  height: auto;
+  display: block;
 }
 
 .sr-only {

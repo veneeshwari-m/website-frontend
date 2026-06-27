@@ -9,14 +9,8 @@ const GET_ACTIVE_BANNERS = gql`
     getActiveBanners(bannerType: $bannerType) {
       id
       backgroundImage
-      sideImage
-      sideContent
       bannerType
       isActive
-      fontColor
-      fontSize
-      buttonColor
-      buttonSize
     }
   }
 `;
@@ -40,33 +34,6 @@ const Hero = () => {
   }, []);
 
   const backgroundImage = bannerData?.backgroundImage || "/images/hero_banner.png";
-  
-
-  const defaultSubtitle = "Dress her like a";
-  const defaultTitle = "Princess";
-  const defaultDesc = "Premium ethnic wear for every celebration";
-
-  let subtitle = defaultSubtitle;
-  let title = defaultTitle;
-  let desc = defaultDesc;
-
-  if (bannerData?.sideContent) {
-
-    const parts = bannerData.sideContent.split('\n');
-    if (parts.length >= 3) {
-      subtitle = parts[0];
-      title = parts[1];
-      desc = parts.slice(2).join(' ');
-    } else if (parts.length === 2) {
-      subtitle = parts[0];
-      title = parts[1];
-      desc = "";
-    } else {
-      subtitle = "";
-      title = bannerData.sideContent;
-      desc = "";
-    }
-  }
 
   return (
     <section className="hero-section">
@@ -74,53 +41,13 @@ const Hero = () => {
     
         <img
           src={backgroundImage}
-          alt={title || "Prince 'N' Princess Latest Collection"}
+          alt="Hero Banner"
           className="hero-image"
           onError={(e) => {
             e.target.onerror = null;
             e.target.src = "/images/hero_banner.png";
           }}
         />
-
-        {bannerData?.sideImage && (
-          <div className="hero-side-image-container">
-            <img src={bannerData.sideImage} alt="Banner graphic" className="hero-side-image" />
-          </div>
-        )}
-
-        {/* HTML Content Overlay */}
-        <div className="hero-content-overlay">
-          {subtitle && (
-            <h2 className="hero-subtitle" style={bannerData?.fontColor ? { color: bannerData.fontColor } : {}}>
-              {subtitle}
-            </h2>
-          )}
-          <h1 
-            className="hero-title" 
-            style={{ 
-              ...(bannerData?.fontColor && { color: bannerData.fontColor }), 
-              ...(bannerData?.fontSize && bannerData.fontSize !== '16px' && { fontSize: isNaN(bannerData.fontSize) ? bannerData.fontSize : `${bannerData.fontSize}px` }) 
-            }}
-          >
-            {title}
-          </h1>
-          {desc && (
-            <p className="hero-desc" style={bannerData?.fontColor ? { color: bannerData.fontColor } : {}}>
-              {desc}
-            </p>
-          )}
-          <button
-            className="hero-shop-now-btn-visible"
-            style={{ 
-              marginTop: '30px',
-              ...(bannerData?.buttonColor && { background: bannerData.buttonColor }),
-              ...(bannerData?.buttonSize && bannerData.buttonSize !== '16px' && { fontSize: isNaN(bannerData.buttonSize) ? bannerData.buttonSize : `${bannerData.buttonSize}px` })
-            }}
-            onClick={() => window.location.href = '/shop'}
-          >
-            SHOP NOW
-          </button>
-        </div>
       </div>
     </section>
   );
